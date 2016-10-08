@@ -1,0 +1,76 @@
+const express = require('express');
+const fs = require('fs');
+const sqlite = require('sql.js');
+
+const filebuffer = fs.readFileSync('db/usda-nnd.sqlite3');
+
+const db = new sqlite.Database(filebuffer);
+
+const app = express();
+
+app.set('port', (process.env.API_PORT || 3001));
+
+const COLUMNS = [
+  'sugar_g',
+  'carbohydrate_g',
+  'protein_g',
+  'kcal',
+  'description',
+];
+app.get('/api/food', (req, res) => {
+  const param = req.query.q;
+
+  if (!param) {
+    res.json({
+      error: 'Missing required parameter `q`',
+    });
+    return;
+  }
+
+  // WARNING: Not for production use! The following statement
+  // is not protected against SQL injections.
+  const r = db.exec(`
+    select ${COLUMNS.join(', ')} from entries
+    where description like '%${param}%'
+    limit 100
+  `);
+
+  if (r[0]) {
+    res.json(
+      r[0].values.map((entry) => {
+        const e = {};
+        COLUMNS.forEach((c, idx) => {
+          e[c] = entry[idx];
+        });
+        return e;
+      }),
+    );
+  } else {
+    res.json([]);
+  }
+});
+
+
+
+
+/**
+ * Socket.io stuff.
+ */
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var onlineUsers = 0;
+
+io.sockets.on('connection', function(socket) {
+  onlineUsers++;
+  console.log(`socket server is on ${onlineUsers}`);
+  io.sockets.emit('onlineUsers', { onlineUsers: onlineUsers });
+
+  socket.on('disconnect', function() {
+    onlineUsers--;
+    io.sockets.emit('onlineUsers', { onlineUsers: onlineUsers });
+  });
+});
+
+app.listen(app.get('port'), () => {
+  console.log(`Find the server at: http://localhost:${app.get('port')}/`); // eslint-disable-line no-console
+});

@@ -10,62 +10,91 @@ const options = [
     { text: '明天', value: '1' },
 ];
 
+const options_hour = [
+    { text:'08', value: '0'},
+    { text:'09', value: '1'},
+    { text:'10', value: '2'},
+    { text:'11', value: '3'},
+    { text:'12', value: '4'},
+    { text:'13', value: '5'},
+    { text:'14', value: '6'},
+    { text:'15', value: '7'},
+    { text:'16', value: '8'},
+    { text:'17', value: '9'},
+    { text:'18', value: 'a'},
+    { text:'19', value: 'b'},
+    { text:'20', value: 'c'},
+    { text:'21', value: 'd'},
+];
+
+const options_minute = [
+    { text:'10', value: '0'},
+    { text:'20', value: '1'},
+    { text:'30', value: '2'},
+    { text:'40', value: '3'},
+    { text:'50', value: '4'},
+];
+
 class MyDatePicker extends Component {
 
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            day     : '0',
+            hour    : '1',
+            minute  : '1',
+        }
+    }
 
     componentDidMount() {
-        this.refs.dropdown.setState({currentValue: '1'});
+
+    }
+
+    handleChangeDay(e, {value}) {
+        this.setState({day: value});
     }
 
     render() {
 
         return (
         <div id='date-picker'>
-            <Dropdown
-                fluid
-                options={options}
-                selection
-                placeholder='Add Users'
-                ref="dropdown"
-                value="1"
-            />
+
             <table className='ui selectable structured large table'>
                 <tbody>
                 <tr>
                     <td>
-                        <div className="ui selection dropdown">
-                            <input type="hidden" name="gender" />
-                                <i className="dropdown icon"></i>
-                                <div className="default text">Gender</div>
-                                <div className="menu">
-                                    <div className="item" data-value="1">Male</div>
-                                    <div className="item" data-value="0">Female</div>
-                                </div>
-                        </div>
+                        <Dropdown
+                            fluid
+                            options={options}
+                            selection
+                            placeholder='日期'
+                            ref="dropdown"
+                            value={this.state.day}
+                            onChange={this.handleChangeDay.bind(this)}
+                        />
                     </td>
                     <td>
-                        <div className="ui selection dropdown">
-                            <input type="hidden" name="gender" />
-                            <i className="dropdown icon"></i>
-                            <div className="default text">Gender</div>
-                            <div className="menu">
-                                <div className="item" data-value="1">Male</div>
-                                <div className="item" data-value="0">Female</div>
-                            </div>
-                        </div>
-
+                        <Dropdown
+                            fluid
+                            options={options_hour}
+                            selection
+                            placeholder='小时'
+                            ref="dropdown"
+                            value={this.state.hour}
+                            onChange={(e, {value}) => (this.setState({hour:value}))}
+                        />
                     </td>
                     <td>
-                        <div className="ui selection dropdown">
-                            <input type="hidden" name="gender" />
-                            <i className="dropdown icon"></i>
-                            <div className="default text">Gender</div>
-                            <div className="menu">
-                                <div className="item" data-value="1">Male</div>
-                                <div className="item" data-value="0">Female</div>
-                            </div>
-                        </div>
+                        <Dropdown
+                            fluid
+                            options={options_minute}
+                            selection
+                            placeholder='分钟'
+                            ref="dropdown"
+                            value={this.state.minute}
+                            onChange={(e, {value}) => (this.setState({minute:value}))}
+                        />
                     </td>
                 </tr></tbody>
 

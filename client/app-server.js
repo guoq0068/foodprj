@@ -1,5 +1,6 @@
-var express = require('express');
-var bodyParser     =         require("body-parser");
+var express        =   require('express');
+var bodyParser     =   require("body-parser");
+
 var app = express();
 
 const fs = require('fs');
@@ -104,7 +105,7 @@ app.post('/kittchen/postselectdata', (req, res)  => {
     } catch (err) {
         jsonStr = null;
     }
-    jsonStr ? res.send({"status":"success", "name": jsonStr.data.name, "url": jsonStr.data.url}) : res.send({"status":"error"});
+    jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
     
 })
 // -----------------------------------

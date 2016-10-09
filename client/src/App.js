@@ -12,8 +12,15 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    var date = new Date();
+    var dinnertime = date.getUTCSeconds();
     this.state = {
-      selectedFoods: []
+      selectedFoods: [],
+      dinnerTime: {
+        day     : '0',
+        hour    : '1',
+        minute  : '2'
+      }
     };
   }
 
@@ -84,9 +91,13 @@ class App extends Component {
   }
 
 
+  /**
+   * 提交菜单信息
+   */
   handleSubmit() {
     console.log("submit is called here");
     console.log(JSON.stringify(this.state.selectedFoods));
+    console.log(this.state.dinnerTime);
     var params = {
       memo:"不要辣",
       data: this.state.selectedFoods
@@ -95,11 +106,35 @@ class App extends Component {
     Client.postSelectFood(params);
   }
 
+
+  /**
+   * 当时间变化的时候记录一下
+   * @param type
+   * @param value
+   */
+  handleChangeDateValue(type, value) {
+      switch(type) {
+        case 'day':
+          this.state.dinnerTime.day = value;
+              break;
+        case 'hour':
+          this.state.dinnerTime.hour = value;
+              break;
+
+        case 'minute':
+          this.state.dinnerTime.minute = value;
+              break;
+      }
+      //this.state.dinnerTime.day = value;
+      //this.setState({this.state.dinnerTime: value});
+  }
+
   render() {
     return (
       <div className='App'>
           <div className="ui text container">
-              <MyDatePicker />
+              <MyDatePicker
+                  handleChangeValue = {this.handleChangeDateValue.bind(this)}/>
               <SelectedItems
                   foods = {this.state.selectedFoods}
                   onFoodRemove={this.handleSelectedFoodClick.bind(this)}

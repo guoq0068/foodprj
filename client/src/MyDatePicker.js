@@ -11,28 +11,28 @@ const options = [
 ];
 
 const options_hour = [
-    { text:'08', value: '0'},
-    { text:'09', value: '1'},
-    { text:'10', value: '2'},
-    { text:'11', value: '3'},
-    { text:'12', value: '4'},
-    { text:'13', value: '5'},
-    { text:'14', value: '6'},
-    { text:'15', value: '7'},
-    { text:'16', value: '8'},
-    { text:'17', value: '9'},
-    { text:'18', value: 'a'},
-    { text:'19', value: 'b'},
-    { text:'20', value: 'c'},
-    { text:'21', value: 'd'},
+    { text:'08', value: '08'},
+    { text:'09', value: '09'},
+    { text:'10', value: '10'},
+    { text:'11', value: '11'},
+    { text:'12', value: '12'},
+    { text:'13', value: '13'},
+    { text:'14', value: '14'},
+    { text:'15', value: '15'},
+    { text:'16', value: '16'},
+    { text:'17', value: '17'},
+    { text:'18', value: '18'},
+    { text:'19', value: '19'},
+    { text:'20', value: '20'},
+    { text:'21', value: '21'},
 ];
 
 const options_minute = [
-    { text:'10', value: '0'},
-    { text:'20', value: '1'},
-    { text:'30', value: '2'},
-    { text:'40', value: '3'},
-    { text:'50', value: '4'},
+    { text:'10', value: '10'},
+    { text:'20', value: '20'},
+    { text:'30', value: '30'},
+    { text:'40', value: '40'},
+    { text:'50', value: '50'},
 ];
 
 class MyDatePicker extends Component {
@@ -41,9 +41,10 @@ class MyDatePicker extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            handleChangeValue : props.handleChangeValue,
             day     : '0',
-            hour    : '1',
-            minute  : '1',
+            hour    : '08',
+            minute  : '10',
         }
     }
 
@@ -53,6 +54,31 @@ class MyDatePicker extends Component {
 
     handleChangeDay(e, {value}) {
         this.setState({day: value});
+    }
+
+
+    handleChangeValue(type, value) {
+        switch(type) {
+            case 'day':
+                this.setState({day: value});
+                break;
+            case 'hour':
+                this.setState({hour: value});
+                break;
+
+            case 'minute':
+                this.setState({minute: value});
+                break;
+        }
+
+        this.props.handleChangeValue(type, value);
+    }
+    /**
+     * 获取当前的时间
+     */
+    getDateValue() {
+
+        return this.state;
     }
 
     render() {
@@ -71,7 +97,7 @@ class MyDatePicker extends Component {
                             placeholder='日期'
                             ref="dropdown"
                             value={this.state.day}
-                            onChange={this.handleChangeDay.bind(this)}
+                            onChange={(e, {value})=>{this.handleChangeValue('day', value)}}
                         />
                     </td>
                     <td>
@@ -82,7 +108,7 @@ class MyDatePicker extends Component {
                             placeholder='小时'
                             ref="dropdown"
                             value={this.state.hour}
-                            onChange={(e, {value}) => (this.setState({hour:value}))}
+                            onChange={(e, {value})=>{this.handleChangeValue('hour',  value)}}
                         />
                     </td>
                     <td>
@@ -93,7 +119,7 @@ class MyDatePicker extends Component {
                             placeholder='分钟'
                             ref="dropdown"
                             value={this.state.minute}
-                            onChange={(e, {value}) => (this.setState({minute:value}))}
+                            onChange={(e, {value})=>{this.handleChangeValue('minute' , value)}}
                         />
                     </td>
                 </tr></tbody>

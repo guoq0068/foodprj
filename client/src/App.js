@@ -12,16 +12,19 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    var date = new Date();
-    var dinnertime = date.getUTCSeconds();
     this.state = {
       selectedFoods: [],
       dinnerTime: {
         day     : '0',
-        hour    : '1',
-        minute  : '2'
-      }
+        hour    : '08',
+        minute  : '10',
+        utcValue   :  0
+      },
+
     };
+
+    var today = new Date();
+    var day
   }
 
 
@@ -98,9 +101,14 @@ class App extends Component {
     console.log("submit is called here");
     console.log(JSON.stringify(this.state.selectedFoods));
     console.log(this.state.dinnerTime);
+
+    var ordertime = new Date().getTime();
+
     var params = {
       memo:"不要辣",
-      data: this.state.selectedFoods
+      data: this.state.selectedFoods,
+      ordertime : ordertime,
+      dinnertime : this.state.dinnerTime
     }
 
     Client.postSelectFood(params);
@@ -112,19 +120,17 @@ class App extends Component {
    * @param type
    * @param value
    */
-  handleChangeDateValue(type, value) {
-      switch(type) {
-        case 'day':
-          this.state.dinnerTime.day = value;
-              break;
-        case 'hour':
-          this.state.dinnerTime.hour = value;
-              break;
+  handleChangeDateValue(value) {
+      var date = new Date();
 
-        case 'minute':
-          this.state.dinnerTime.minute = value;
-              break;
+      //设置日期
+      if(value.day == '1') {
+        date.setDate(date.getDate() + 1);
       }
+
+      date.setHours(value.hour, value.minute);
+
+      this.state.dinnerTime = date.getTime();
       //this.state.dinnerTime.day = value;
       //this.setState({this.state.dinnerTime: value});
   }

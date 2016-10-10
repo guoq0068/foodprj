@@ -71,7 +71,7 @@ class MyDatePicker extends Component {
                 break;
         }
 
-        this.props.handleChangeValue(type, value);
+        this.props.handleChangeValue(this.state);
     }
     /**
      * 获取当前的时间

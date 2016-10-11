@@ -42,9 +42,9 @@ class MyDatePicker extends Component {
         super(props);
         this.state = {
             handleChangeValue : props.handleChangeValue,
-            day     : '0',
-            hour    : '08',
-            minute  : '10',
+            day     : this.props.dinnerTime.day,
+            hour    : this.props.dinnerTime.hour,
+            minute  : this.props.dinnerTime.minute,
         }
     }
 

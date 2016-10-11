@@ -23,9 +23,52 @@ class App extends Component {
 
     };
 
-    var today = new Date();
-    var day
+    this.initState();
   }
+
+  /**
+   * 初始化状态数据
+   */
+
+   initState() {
+     var today  = new Date();
+     var minute = today.getMinutes();
+
+     minute     = (parseInt(minute / 10) + 1) * 10;
+
+     minute = minute % 60;
+
+     console.log('minute is %d', minute);
+     today.setMinutes(minute);
+
+
+     var strHour    = '0';
+
+     var strMinute  = '';
+
+     var hour = today.getHours();
+
+     if(hour < 10) {
+
+       strHour = strHour + hour;
+     }
+     else {
+       strHour = ''  + hour;
+     }
+
+     if(minute == 0) {
+       strMinute = '00';
+     }
+     else {
+       strMinute = strMinute + minute;
+     }
+
+
+      this.state.dinnerTime.hour    = strHour;
+      this.state.dinnerTime.minute  = strMinute;
+      this.state.dinnerTime.utcValue = today.getTime();
+
+   }
 
 
   handleSelectedFoodClick(idx) {
@@ -98,7 +141,10 @@ class App extends Component {
    * 提交菜单信息
    */
   handleSubmit() {
-    console.log("submit is called here");
+     if(this.state.selectedFoods.length == 0) {
+       alert("忘了选择订单了吧");
+       return;
+     }
     console.log(JSON.stringify(this.state.selectedFoods));
     console.log(this.state.dinnerTime);
 
@@ -130,7 +176,9 @@ class App extends Component {
 
       date.setHours(value.hour, value.minute);
 
-      this.state.dinnerTime = date.getTime();
+      this.state.dinnerTime.hour      = value.hour;
+      this.state.dinnerTime.minute    = value.minute;
+      this.state.dinnerTime.utcValue  = date.getTime();
       //this.state.dinnerTime.day = value;
       //this.setState({this.state.dinnerTime: value});
   }
@@ -140,7 +188,9 @@ class App extends Component {
       <div className='App'>
           <div className="ui text container">
               <MyDatePicker
-                  handleChangeValue = {this.handleChangeDateValue.bind(this)}/>
+                  handleChangeValue = {this.handleChangeDateValue.bind(this)}
+                  dinnerTime = {this.state.dinnerTime}
+              />
               <SelectedItems
                   foods = {this.state.selectedFoods}
                   onFoodRemove={this.handleSelectedFoodClick.bind(this)}

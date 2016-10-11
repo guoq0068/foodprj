@@ -1,6 +1,8 @@
 var express        =   require('express');
 var bodyParser     =   require("body-parser");
 
+var myutil         = require("./src/server/myutil");
+
 var app = express();
 
 const fs = require('fs');
@@ -73,10 +75,42 @@ app.get('/api/food', (req, res) => {
 // -----------------------------------
 //  Get Kittchen  function
 // -----------------------------------
+
+app.get('/kittchen/test', (req, res) => {
+    const result = {
+        ordernum: 0,
+        menulist: []
+    }
+    const r = db.exec(`
+        select ${COLUMNS_MENU.join(', ')} from menu
+        where active = 1
+        `);
+
+    if (r[0]) {
+        /*
+        result.menulist = r[0].values.map((entry) => {
+            const e = {};
+            COLUMNS_MENU.forEach((c, idx) => {
+                e[c] = entry[idx];
+            });
+
+        }); */
+        var orderno  = myutil.get_order_no();
+        console.log("the no is %d", orderno);
+        result.ordernum = orderno[0];
+        console.log(result);
+        res.json(result);
+
+    } else {
+        res.json(result);
+    }
+});
+
 /**
  * 获取厨房的菜单
  */
 app.get('/kittchen/getmenulist', (req, res) => {
+
     const r = db.exec(`
         select ${COLUMNS_MENU.join(', ')} from menu
         where active = 1

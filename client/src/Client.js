@@ -19,25 +19,39 @@ function checkStatus(response) {
 }
 
 function parseJSON(response) {
-  console.log('parseJson is called');
   var result = response.json();
-  console.log(result);
   return result;
 }
 
+/**
+ * 获取菜单内容的接口
+ * @returns {*|Promise.<TResult>}
+ */
 function getItems() {
-  console.log('getItems is called');
+
   return fetch(`/kittchen/getmenulist`, {
     accept: 'application/json'
   }).then(parseJSON);
 }
 
 
+function getOrderNos() {
+  return fetch(`/kittchen/getordernums`, {
+    accept: 'application/json'
+  }).then(parseJSON);
+}
+
 function postSelectFood(query) {
+
+
   var body = 'memo=' + query.memo + '&data=' + JSON.stringify(query.data);
 
+  body  = body + "&ordertime=" + query.ordertime;
+  body  = body + "&dinnertime=" + query.dinnertime;
+  body  = body + "&orderno=" + query.orderno;
 
   console.log('body %s', body);
+
   fetch('/kittchen/postselectdata', {
     method: "POST",
     headers: {
@@ -47,5 +61,5 @@ function postSelectFood(query) {
   }).then(checkStatus);
 }
 
-const Client = { search, getItems, postSelectFood};
+const Client = { search, getItems, postSelectFood, getOrderNos};
 export default Client;

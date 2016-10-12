@@ -28,6 +28,7 @@ const options_hour = [
 ];
 
 const options_minute = [
+    { text:'00', value: '00'},
     { text:'10', value: '10'},
     { text:'20', value: '20'},
     { text:'30', value: '30'},
@@ -58,20 +59,27 @@ class MyDatePicker extends Component {
 
 
     handleChangeValue(type, value) {
+
         switch(type) {
             case 'day':
-                this.setState({day: value});
+                console.log("set is called");
+                this.setState({day: value}, () => {
+                    this.props.handleChangeValue(this.state);
+                });
                 break;
             case 'hour':
-                this.setState({hour: value});
+                this.setState({hour: value}, () => {
+                    this.props.handleChangeValue(this.state);
+                });
                 break;
 
             case 'minute':
-                this.setState({minute: value});
+                this.setState({minute: value}, () => {
+                    this.props.handleChangeValue(this.state);
+                });
                 break;
         }
 
-        this.props.handleChangeValue(this.state);
     }
     /**
      * 获取当前的时间

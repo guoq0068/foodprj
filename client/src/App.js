@@ -9,6 +9,7 @@ const PORT = 3000;
 
 class App extends Component {
 
+
   constructor(props) {
     super(props);
 
@@ -20,36 +21,35 @@ class App extends Component {
         minute  : '10',
         utcValue   :  0
       },
-
+      ordersNums : [],
+      currentSelectDay : 0,
     };
 
     this.initState();
+
+    Client.getOrderNos().then((orders) => {
+      this.setState({ordersNums:orders});
+    });
   }
 
   /**
    * 初始化状态数据
    */
-
    initState() {
      var today  = new Date();
      var minute = today.getMinutes();
 
      minute     = (parseInt(minute / 10) + 1) * 10;
-
      minute = minute % 60;
 
-     console.log('minute is %d', minute);
-     today.setMinutes(minute);
 
+     today.setMinutes(minute, 0, 0);
 
      var strHour    = '0';
-
      var strMinute  = '';
-
      var hour = today.getHours();
 
      if(hour < 10) {
-
        strHour = strHour + hour;
      }
      else {
@@ -63,10 +63,9 @@ class App extends Component {
        strMinute = strMinute + minute;
      }
 
-
-      this.state.dinnerTime.hour    = strHour;
-      this.state.dinnerTime.minute  = strMinute;
-      this.state.dinnerTime.utcValue = today.getTime();
+     this.state.dinnerTime.hour    = strHour;
+     this.state.dinnerTime.minute  = strMinute;
+     this.state.dinnerTime.utcValue = today.getTime();
 
    }
 
@@ -114,7 +113,7 @@ class App extends Component {
     });
 
     if(index != -1) {
-      console.log("found. index:%d, count:%d", index, tempfood.count);
+
       this.state.selectedFoods.splice(index, 1, {
         name: food.name,
         id: food.id,
@@ -128,8 +127,6 @@ class App extends Component {
         count:1});
 
     }
-
-
 
     this.setState({
       selectedFoods: this.state.selectedFoods
@@ -154,7 +151,8 @@ class App extends Component {
       memo:"不要辣",
       data: this.state.selectedFoods,
       ordertime : ordertime,
-      dinnertime : this.state.dinnerTime
+      dinnertime : this.state.dinnerTime.utcValue,
+      orderno :  this.state.ordersNums[this.state.currentSelectDay]
     }
 
     Client.postSelectFood(params);
@@ -174,11 +172,14 @@ class App extends Component {
         date.setDate(date.getDate() + 1);
       }
 
-      date.setHours(value.hour, value.minute);
+      date.setHours(value.hour, value.minute, 0, 0);
 
       this.state.dinnerTime.hour      = value.hour;
       this.state.dinnerTime.minute    = value.minute;
       this.state.dinnerTime.utcValue  = date.getTime();
+
+      this.setState(
+          {currentSelectDay: parseInt(value.day)});
       //this.state.dinnerTime.day = value;
       //this.setState({this.state.dinnerTime: value});
   }
@@ -195,6 +196,8 @@ class App extends Component {
                   foods = {this.state.selectedFoods}
                   onFoodRemove={this.handleSelectedFoodClick.bind(this)}
                   onConfimClick={this.handleSubmit.bind(this)}
+                  ordersNums = {this.state.ordersNums}
+                  currentSelectDay = {this.state.currentSelectDay}
               />
               <ItemList
                   onFoodSelect= {this.handleItemClick.bind(this)}
@@ -407,6 +410,9 @@ const SelectedFood = (props) => (
 );
 
 
+/**
+ *  菜单描画的类。
+ */
 class ItemList extends Component {
   constructor(props) {
     super(props);
@@ -525,7 +531,7 @@ class SelectedItems extends Component {
           <thead>
           <tr>
             <th colSpan='1'>
-              <h3>用户订餐</h3>
+              <h3>用户订餐({this.props.ordersNums[this.props.currentSelectDay]}份)</h3>
             </th>
             <th>
               <button className="ui right floated button"

@@ -1,16 +1,13 @@
 var express        =   require('express');
 var bodyParser     =   require("body-parser");
 
-var myutil         = require("./src/server/myutil");
+var myutil         =    require("./src/server/myutil");
 
-var app = express();
+var app            =    express();
 
-const fs = require('fs');
-const sqlite = require('sql.js');
+var kittchen       =    require('./src/server/router/kittchen');
 
-const filebuffer = fs.readFileSync('db/usda-nnd.sqlite3');
 
-const db = new sqlite.Database(filebuffer);
 
 app.use(express.static('./public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,125 +20,11 @@ var io = require('socket.io').listen(server);
 var title = 'Untitled Presentation';
 
 
-const COLUMNS = [
-    'sugar_g',
-    'carbohydrate_g',
-    'protein_g',
-    'kcal',
-    'description',
-];
-
-const COLUMNS_MENU = [
-    'id',
-    'name'
-];
-
-app.get('/api/food', (req, res) => {
-    const param = req.query.q;
-
-    if (!param) {
-        res.json({
-            error: 'Missing required parameter `q`',
-        });
-        return;
-    }
-
-    // WARNING: Not for production use! The following statement
-    // is not protected against SQL injections.
-    const r = db.exec(`
-    select ${COLUMNS.join(', ')} from entries
-    where description like '%${param}%'
-    limit 100
-  `);
-
-    if (r[0]) {
-        res.json(
-            r[0].values.map((entry) => {
-                const e = {};
-                COLUMNS.forEach((c, idx) => {
-                    e[c] = entry[idx];
-                });
-                return e;
-            }),
-        );
-    } else {
-        res.json([]);
-    }
-});
 
 
+app.use('/kittchen',kittchen);
 
 
-// -----------------------------------
-//  Get Kittchen  function
-// -----------------------------------
-
-app.get('/kittchen/test', (req, res) => {
-    const result = {
-        ordernum: 0,
-        menulist: []
-    }
-    const r = db.exec(`
-        select ${COLUMNS_MENU.join(', ')} from menu
-        where active = 1
-        `);
-
-    if (r[0]) {
-        /*
-        result.menulist = r[0].values.map((entry) => {
-            const e = {};
-            COLUMNS_MENU.forEach((c, idx) => {
-                e[c] = entry[idx];
-            });
-
-        }); */
-        var orderno  = myutil.get_order_no();
-        console.log("the no is %d", orderno);
-        result.ordernum = orderno[0];
-        console.log(result);
-        res.json(result);
-
-    } else {
-        res.json(result);
-    }
-});
-
-/**
- * 获取厨房的菜单
- */
-app.get('/kittchen/getmenulist', (req, res) => {
-
-    const r = db.exec(`
-        select ${COLUMNS_MENU.join(', ')} from menu
-        where active = 1
-        `);
-
-    if (r[0]) {
-        res.json(
-            r[0].values.map((entry) => {
-                const e = {};
-                COLUMNS_MENU.forEach((c, idx) => {
-                    e[c] = entry[idx];
-                });
-                return e;
-            }),
-        );
-    } else {
-        res.json([]);
-    }
-});
-
-app.post('/kittchen/postselectdata', (req, res)  => {
-    var jsonStr = '';
-    try {
-        jsonStr = JSON.parse(req.body.data);
-        console.log(jsonStr);
-    } catch (err) {
-        jsonStr = null;
-    }
-    jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
-    
-})
 // -----------------------------------
 //  Game Server Data
 // -----------------------------------

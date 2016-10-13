@@ -45,14 +45,23 @@ router.post('/postselectdata', (req, res)  => {
 
     var orderNum     =   MyDb.get_orders_num();
 
-    MyDb.insert_order_list(orderNum+1, ordertime, dinnertime, memo, orderno);
+    MyDb.insert_order_list(orderNum + 1, ordertime, dinnertime, memo, orderno);
 
     try {
         jsonStr = JSON.parse(req.body.data);
+        jsonStr.map((item, idx) => {
+            MyDb.insert_order_detail(item.id, orderNum + 1, item.count);
+        });
+
+
         console.log(jsonStr);
     } catch (err) {
         jsonStr = null;
     }
+
+    MyDb.save_db();
+
+
     jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
 })
 

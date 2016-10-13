@@ -96,9 +96,21 @@ function  insert_order_list(orderid, ordertime, dinnertime, memo, orderno) {
         orderno +
         ');';
 
-    console.log(sqlStr);
     db.run(sqlStr);
-    save_db();
+}
+
+/**
+ * 把菜单的详细信息写入到数据库中
+ * @param itemid
+ * @param orderid
+ * @param count
+ */
+function insert_order_detail(itemid, orderid, count) {
+    var sqlStr  = 'INSERT INTO orderdetail(itemid, orderid, count, status) VALUES(' +
+            itemid + ', ' + orderid + ', ' + count + ', 0);';
+
+    db.run(sqlStr);
+
 }
 
 /**
@@ -113,10 +125,14 @@ function save_db() {
 }
 
 
-exports.get_menu_list       =  get_menu_list;
+exports.get_menu_list       =   get_menu_list;
 
-exports.get_count_from_db   =  get_count_from_db;
+exports.get_count_from_db   =   get_count_from_db;
 
 exports.get_orders_num      =   get_orders_num;
 
 exports.insert_order_list   =   insert_order_list;
+
+exports.insert_order_detail =   insert_order_detail;
+
+exports.save_db             =   save_db;

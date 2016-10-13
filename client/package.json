@@ -32,6 +32,7 @@
     "sql.js": "^0.3.2",
     "body-parser": "^1.14.1",
     "semantic-ui-react":"^0.54.3",
+    "buffer":"^5.0.0",
     "webpack-dev-server": "^1.14.1"
   },
   "scripts": {

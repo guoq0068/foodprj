@@ -1,11 +1,11 @@
 var express        =   require('express');
 var bodyParser     =   require("body-parser");
 
-var myutil         =    require("./src/server/myutil");
+var myutil         =    require("./src/server/MyUtil");
 
 var app            =    express();
 
-var kittchen       =    require('./src/server/router/kittchen');
+var kittchen       =    require('./src/server/router/Kittchen');
 
 
 

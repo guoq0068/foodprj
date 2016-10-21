@@ -24,11 +24,9 @@ function get_count_from_db(startTime, endTime) {
     var result = 0;
     var sqlstr = 'select count(*) from orders where eattime > ' + startTime + ' and eattime < ' + endTime;
 
-    console.log(sqlstr);
     const r = db.exec(sqlstr);
 
     if (r[0]) {
-        console.log(r[0]);
         result = r[0].values[0][0];
 
     }
@@ -72,7 +70,6 @@ function get_orders_num() {
     const r = db.exec('select count(*) from orders');
 
     if( r[0] ) {
-        console.log(r[0].values);
         result = r[0].values[0][0];
     }
 
@@ -80,16 +77,20 @@ function get_orders_num() {
 }
 
 /**
- *
- * @param orderid     订单的唯一编号
+ * orders表结构说明
+ * id  唯一标识符
+ * ordertime  下单时间
+ * eattime    吃饭时间
+ * comment    用户备注
+ * status     订单状况（0：还没有开始做   1：完成）
+ * orderno    订单发生当天的序号，就是该订单是当天的第几单。
  * @param ordertime   订餐的时间
  * @param dinnertime  用餐的时间
  * @param memo     订单的备注
  * @param orderno  当日订单的编号
  */
-function  insert_order_list(orderid, ordertime, dinnertime, memo, orderno) {
-    var sqlStr  =   'INSERT INTO orders VALUES(' +
-        orderid + ', ' +
+function  insert_order_list(ordertime, dinnertime, memo, orderno) {
+    var sqlStr  =   'INSERT INTO orders(ordertime, eattime, comment, status, orderno) VALUES(' +
         ordertime + ', ' +
         dinnertime + ', ' +
         '"' + memo + '"' + ', 0 ,' +
@@ -97,17 +98,34 @@ function  insert_order_list(orderid, ordertime, dinnertime, memo, orderno) {
         ');';
 
     db.run(sqlStr);
+
+    sqlStr = 'select id from orders where ordertime = ' + ordertime;
+    const r  = db.exec(sqlStr);
+
+    var   result =  -1;
+    if(r[0]) {
+        result  = r[0].values[0][0];
+    }
+
+    return result;
 }
 
 /**
+ * orderDetail表结构说明
+ * orderid  订单id
+ * itemid   菜品id
+ * id       自增长id
+ * status   订单中菜品的状态
+ * count    菜品的数量
  * 把菜单的详细信息写入到数据库中
  * @param itemid
  * @param orderid
  * @param count
+ * @param name
  */
-function insert_order_detail(itemid, orderid, count) {
-    var sqlStr  = 'INSERT INTO orderdetail(itemid, orderid, count, status) VALUES(' +
-            itemid + ', ' + orderid + ', ' + count + ', 0);';
+function insert_order_detail(itemid, orderid, count, name) {
+    var sqlStr  = 'INSERT INTO orderdetail(itemid, orderid, count, status, singlename) VALUES(' +
+            itemid + ', ' + orderid + ', ' + count + ', 0 , "' + name + '" );';
 
     db.run(sqlStr);
 
@@ -124,6 +142,54 @@ function save_db() {
 
 }
 
+/**
+ * 获取要炒的菜的列表
+ */
+function get_cook_list() {
+
+    var today     = new Date();
+
+    today.setHours(0,0,0);
+
+    var beginTime = today.getTime();
+
+    today.setDate(today.getDate() + 1);
+
+    var endTime   = today.getTime();
+
+
+    var querystr  = 'select orders.id, detail.itemid, detail.count, detail.singlename, orders.eattime, orders.orderno from orderdetail ' +
+        'as detail, orders  where detail.orderid = orders.id and detail.status = 0 and detail.orderid in ( ' +
+        'select id from orders where orders.eattime > '+ beginTime +' and eattime < ' + endTime +') order by orders.eattime;';
+
+    var r = db.exec(querystr);
+
+    var keys = {};
+    var cooklist = [];
+    if(r[0]) {
+        console.log(r[0]);
+        r[0].values.map((entry) => {
+            var itemid = entry[1];
+
+            //如果没有这个菜，在做饭列表立增加
+            console.log("itemid " + keys[itemid]);
+            if(typeof (keys[itemid]) == "undefined") {
+                var length = cooklist.length;
+                keys[itemid] = length;
+                cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
+                cooklist[length].orderdetail = [{orderid:entry[0], orderno:entry[5], eattime:entry[4]}];
+            }
+            //如果有这个菜，在列表里增加一个
+            else {
+                var length = keys[itemid];
+                cooklist[length].foodcount = cooklist[length].foodcount + parseInt(entry[2]);
+            }
+        });
+    }
+    console.log(keys);
+    console.log(cooklist);
+
+}
 
 exports.get_menu_list       =   get_menu_list;
 
@@ -136,3 +202,5 @@ exports.insert_order_list   =   insert_order_list;
 exports.insert_order_detail =   insert_order_detail;
 
 exports.save_db             =   save_db;
+
+exports.get_cook_list       =   get_cook_list;

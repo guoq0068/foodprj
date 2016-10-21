@@ -43,14 +43,15 @@ router.post('/postselectdata', (req, res)  => {
     var orderno     =   req.body.orderno;
     var memo        =   req.body.memo;
 
-    var orderNum     =   MyDb.get_orders_num();
+    //var orderNum     =   MyDb.get_orders_num();
 
-    MyDb.insert_order_list(orderNum + 1, ordertime, dinnertime, memo, orderno);
+    var orderId     = MyDb.insert_order_list(ordertime, dinnertime, memo, orderno);
 
+    console.log("orderId is %s", orderId);
     try {
         jsonStr = JSON.parse(req.body.data);
         jsonStr.map((item, idx) => {
-            MyDb.insert_order_detail(item.id, orderNum + 1, item.count);
+            MyDb.insert_order_detail(item.id, orderId, item.count, item.name);
         });
 
 
@@ -61,7 +62,7 @@ router.post('/postselectdata', (req, res)  => {
 
     MyDb.save_db();
 
-
+    MyDb.get_cook_list();
     jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
 })
 

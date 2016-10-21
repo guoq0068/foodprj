@@ -4,5 +4,3 @@ client/public/
 !client/public/index.html
 .idea/
 *.log
-*.sqlite3
-client/db/usda-nnd.sqlite3

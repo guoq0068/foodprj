@@ -31,6 +31,17 @@ router.get('/getmenulist', (req, res) => {
 
 });
 
+/**
+ *  获取要做的菜的列表
+ */
+router.get('/getcooklist', (req, res) => {
+
+    const list = MyDb.get_cook_list();
+
+    console.log(list);
+    res.json(list);
+})
+
 
 /**
  * 来新订单，把新订单录入到数据库中
@@ -62,7 +73,6 @@ router.post('/postselectdata', (req, res)  => {
 
     MyDb.save_db();
 
-    MyDb.get_cook_list();
     jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
 })
 

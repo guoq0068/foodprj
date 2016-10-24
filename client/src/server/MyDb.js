@@ -188,6 +188,7 @@ function get_cook_list() {
     }
     console.log(keys);
     console.log(cooklist);
+    return cooklist;
 
 }
 

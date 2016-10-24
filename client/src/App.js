@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Client from './Client';
 import io from 'socket.io-client';
 import MyDatePicker from './MyDatePicker';
+import {withRouter} from 'react-router';
 
 
 const IP = 'localhost';
@@ -158,6 +159,8 @@ class App extends Component {
     }
 
     Client.postSelectFood(params);
+
+    this.props.router.push("/");
   }
 
 
@@ -413,4 +416,4 @@ class SelectedItems extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);

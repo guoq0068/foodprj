@@ -61,5 +61,14 @@ function postSelectFood(query) {
   }).then(checkStatus);
 }
 
-const Client = { search, getItems, postSelectFood, getOrderNos};
+/**
+ *  获取要做的猜的列表
+ */
+function getCookList() {
+  return fetch(`/kittchen/getcooklist`, {
+    accept: 'application/json'
+  }).then(parseJSON);
+}
+
+const Client = { search, getItems, postSelectFood, getOrderNos, getCookList};
 export default Client;

@@ -132,9 +132,8 @@ router.setCookListSocket = (socket) => {
 }
 
 function myemit(socket, command, payload) {
-    console.log('socket emit command is called ' + command  + ' ' + payload);
     if(socket.id != 0) {
-        console.log('emit command is called');
+
         socket.emit(command, payload);
     }
 }

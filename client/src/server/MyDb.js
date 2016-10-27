@@ -132,6 +132,81 @@ function insert_order_detail(itemid, orderid, count, name) {
 }
 
 /**
+ * 根据炒完的菜的菜品id和订单id，更新订单中菜品的完成状态。
+ * @param item
+ */
+function update_order_status(item) {
+    var sqlStr = 'UPDATE orderdetail set status = 1 where orderid = ' + item.orderid + ' and itemid = ' + item.foodid +';';
+
+    db.run(sqlStr);
+}
+
+
+function update_order_list_status(orderid) {
+
+    var sqlStr =  'UPDATE orders set status = 1  where id = ' + orderid + ' ;';
+
+    db.run(sqlStr);
+
+    var result = {
+        orderid: 0,
+        orderno: 0,
+        eattime: 0,
+        details: []
+    };
+
+    sqlStr = 'SELECT id, orderno,  eattime, comment from orders where id = ' + orderid + '; ';
+
+    var r = db.exec(sqlStr);
+
+    if(r[0]) {
+        var values  = r[0].values[0];
+
+        result.orderid = values[0];
+        result.orderno = values[1];
+        result.eattime = values[2];
+        result.comment = values[3];
+    }
+
+    sqlStr = 'select  itemid, singlename, count ' +
+        'from orderdetail  where orderid  = ' + orderid + ';';
+
+    r = db.exec(sqlStr);
+
+    var details = [];
+
+    if(r[0]) {
+
+        r[0].values.map((item) => {
+            details = [...details.slice(0, details.length),
+                {foodid:item[0], foodname: item[1], foodcount:item[2]}]
+        });
+
+        result.details = details;
+    }
+    
+    return result;
+}
+
+/**
+ * 获取未完成的订单的菜的个数，如果为0，说明该订单已经完成。
+ * @param orderid
+ * @returns {number}
+ */
+function get_unfinished_food_count(orderid) {
+    var sqlStr = 'select  count(*) from orderdetail where orderid = ' + orderid + ' and status = 0;';
+
+    var  r = db.exec(sqlStr);
+
+    var  result = 0;
+    if(r[0]) {
+        result = r[0].values[0][0];
+    }
+
+    return result;
+}
+
+/**
  *  把数据库数据保存到物理存储。
  */
 function save_db() {
@@ -167,27 +242,27 @@ function get_cook_list() {
     var keys = {};
     var cooklist = [];
     if(r[0]) {
-        console.log(r[0]);
         r[0].values.map((entry) => {
             var itemid = entry[1];
 
             //如果没有这个菜，在做饭列表立增加
-            console.log("itemid " + keys[itemid]);
             if(typeof (keys[itemid]) == "undefined") {
                 var length = cooklist.length;
                 keys[itemid] = length;
                 cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
-                cooklist[length].orderdetail = [{orderid:entry[0], orderno:entry[5], eattime:entry[4]}];
+                cooklist[length].orderdetail = [{orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
             }
             //如果有这个菜，在列表里增加一个
             else {
                 var length = keys[itemid];
                 cooklist[length].foodcount = cooklist[length].foodcount + parseInt(entry[2]);
+                cooklist[length].orderdetail = [
+                    ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
             }
         });
     }
-    console.log(keys);
-    console.log(cooklist);
+
     return cooklist;
 
 }
@@ -205,3 +280,9 @@ exports.insert_order_detail =   insert_order_detail;
 exports.save_db             =   save_db;
 
 exports.get_cook_list       =   get_cook_list;
+
+exports.update_order_status =   update_order_status;
+
+exports.get_unfinished_food_count = get_unfinished_food_count;
+
+exports.update_order_list_status  = update_order_list_status;

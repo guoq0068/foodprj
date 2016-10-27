@@ -1,11 +1,15 @@
 /**
  * Created by guoq on 16/10/2.
  */
+var path = require('path');
+
 var webpack = require('webpack'),
     minimize = process.argv.indexOf('--no-minimize') === -1 ? true : false,
     plugins = [];
 
 minimize && plugins.push(new webpack.optimize.UglifyJsPlugin());
+
+
 
 module.exports = {
     entry: './app-client.js',
@@ -14,6 +18,7 @@ module.exports = {
         path: './public'
     },
     plugins: plugins,
+
     module: {
         loaders: [{
             exclude: /(node_modules|app-server.js)/,
@@ -23,7 +28,7 @@ module.exports = {
             }
         }, { test: /\.css$/, loader: "style!css" },
             {
-                test: /\.(jpg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+                test: /\.(jpg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp3)(\?.*)?$/,
                 loader: 'file',
                 query: {
                     name: 'static/media/[name].[hash:8].[ext]'

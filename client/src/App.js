@@ -212,58 +212,6 @@ class App extends Component {
   }
 }
 
-//add by guoq-s
-class ChatButton extends Component {
-
-
-
-  initSocket() {
-    console.log("initSocket called");
-    this.socket = io('http://' + IP + ':' + PORT);
-    this.socket.on('connect', this.connect.bind(this));
-    this.socket.on('disconnect', this.disconnect.bind(this));
-  }
-
-  connect() {
-    console.log('Connected: %s', this.socket.id);
-
-  }
-
-  disconnect() {
-    console.log('Disconnected: %s', this.socket.id);
-    //this.setState({ status: 'disconnected' });
-  }
-
-  onError(err) {
-    console.log('Error occups %s', err);
-  }
-
-  connectServer(){
-    console.log("connectServer called  1");
-    this.initSocket();
-
-    console.log("connect server is called");
-  }
-  
-  sendMessage() {
-    console.log("send message is called id = %s", this.socket.id);
-    this.socket.emit("message", "gogogo");
-  }
-
-  render() {
-
-    return (
-      <div id="connect_server">
-        <button className="ui button"  onClick={this.connectServer.bind(this)}>Connect</button>
-        <button className="ui button"  onClick={this.sendMessage.bind(this)}>Send Message</button>
-
-      </div>
-    );
-  }
-}
-//add by guoq-e
-
-
 
 /**
  *  菜单描画的类。

@@ -1,4 +1,6 @@
 
+import 'whatwg-fetch';
+
 function search(query) {
   return fetch(`/api/food?q=${query}`, {
     accept: 'application/json',
@@ -34,13 +36,20 @@ function getItems() {
   }).then(parseJSON);
 }
 
-
+/**
+ * 获取订单数量
+ * @returns {*|Promise.<TResult>}
+ */
 function getOrderNos() {
   return fetch(`/kittchen/getordernums`, {
     accept: 'application/json'
   }).then(parseJSON);
 }
 
+/**
+ * 向服务器端提交选定的菜。
+ * @param query
+ */
 function postSelectFood(query) {
 
 
@@ -50,7 +59,6 @@ function postSelectFood(query) {
   body  = body + "&dinnertime=" + query.dinnertime;
   body  = body + "&orderno=" + query.orderno;
 
-  console.log('body %s', body);
 
   fetch('/kittchen/postselectdata', {
     method: "POST",
@@ -62,7 +70,7 @@ function postSelectFood(query) {
 }
 
 /**
- *  获取要做的猜的列表
+ *  获取要做的菜的列表
  */
 function getCookList() {
   return fetch(`/kittchen/getcooklist`, {
@@ -70,5 +78,25 @@ function getCookList() {
   }).then(parseJSON);
 }
 
-const Client = { search, getItems, postSelectFood, getOrderNos, getCookList};
+/**
+ * 菜做好了，通知服务器端。
+ * @param data
+ */
+function postCookOver(data, foodname) {
+
+  var body = 'data=' + JSON.stringify(data) + '&name=' + foodname;
+  console.log(body);
+  fetch('/kittchen/postcookover', {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body
+  }).then(checkStatus);
+}
+
+const Client = { search, getItems, postSelectFood, getOrderNos, getCookList,
+                 postCookOver};
+
+
 export default Client;

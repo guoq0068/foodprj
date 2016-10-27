@@ -21,7 +21,6 @@ var title = 'Untitled Presentation';
 
 
 
-
 app.use('/kittchen',kittchen);
 
 
@@ -229,6 +228,15 @@ game.init();
 
 io.sockets.on('connect', function (socket) {
 
+    socket.on('cooklist', function(payload) {
+        //保存socket实例，用来通知客户端。
+        kittchen.setMySocket(socket);
+    });
+
+    socket.on('orderlist', function(payload) {
+
+        kittchen.setCookListSocket(socket);
+    });
     // -----------------------------------
     //  Events from Clients 
     // -----------------------------------
@@ -282,7 +290,9 @@ io.sockets.on('connect', function (socket) {
     //   Dispatch to Single Client
     // -----------------------------------
 
-    socket.emit('updateConnection', game.getConnections());
+    //socket.emit('updateConnection', game.getConnections());
+
+
 
 });
 

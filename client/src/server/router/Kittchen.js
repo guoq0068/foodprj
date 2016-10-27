@@ -9,7 +9,8 @@ var MyUtil      = require('../MyUtil');
 
 var MyDb        = require('../MyDb');
 
-
+var mySocket = {};
+var cookListSocket = {};
 /**
  *  获取今天和明天的订单数量。
  */
@@ -38,7 +39,6 @@ router.get('/getcooklist', (req, res) => {
 
     const list = MyDb.get_cook_list();
 
-    console.log(list);
     res.json(list);
 })
 
@@ -58,7 +58,6 @@ router.post('/postselectdata', (req, res)  => {
 
     var orderId     = MyDb.insert_order_list(ordertime, dinnertime, memo, orderno);
 
-    console.log("orderId is %s", orderId);
     try {
         jsonStr = JSON.parse(req.body.data);
         jsonStr.map((item, idx) => {
@@ -66,16 +65,76 @@ router.post('/postselectdata', (req, res)  => {
         });
 
 
-        console.log(jsonStr);
     } catch (err) {
         jsonStr = null;
     }
 
-    MyDb.save_db();
+    myemit(mySocket,'neworder',jsonStr );
 
     jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
+
+    MyDb.save_db();
 })
 
+/**
+ * 厨师端菜做完的时候点击，服务器端根据订单情况进行单子配送。
+ */
+router.post('/postcookover', (req, res) => {
 
+    var jsonStr;
+
+    var data = req.body.data;
+
+    var name  = req.body.name;
+
+    var message = {data:data, name:name};
+
+
+    try {
+        var unfinishedCount = 0;
+        jsonStr = JSON.parse(data);
+        jsonStr.map((item, idx) => {
+
+            var resultstr = '';
+
+            MyDb.update_order_status(item);
+
+            unfinishedCount = MyDb.get_unfinished_food_count(item.orderid);
+
+            //所有的菜都炒完了。 通知客户端菜结束。
+            if(unfinishedCount == 0) {
+
+                var result = MyDb.update_order_list_status(item.orderid);
+
+                resultstr = JSON.stringify(result);
+
+                myemit(cookListSocket, 'orderfinished', resultstr);
+            }
+        });
+
+        myemit(cookListSocket, 'foodfinished',  JSON.stringify(message));
+
+    } catch (err) {
+        jsonStr = null;
+    }
+
+    jsonStr ? res.send({"status":"success"}) : res.send({"status":"error"});
+
+    MyDb.save_db();
+});
+
+router.setMySocket = (socket) => {
+    mySocket   = socket;
+}
+
+router.setCookListSocket = (socket) => {
+    cookListSocket = socket;
+}
+
+function myemit(socket, command, payload) {
+    if(socket.hasOwnProperty('emit')) {
+        socket.emit(command, payload);
+    }
+}
 
 module.exports = router;

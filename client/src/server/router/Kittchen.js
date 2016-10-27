@@ -9,8 +9,8 @@ var MyUtil      = require('../MyUtil');
 
 var MyDb        = require('../MyDb');
 
-var mySocket = {};
-var cookListSocket = {};
+var mySocket = { id: 0};
+var cookListSocket = {id: 0};
 /**
  *  获取今天和明天的订单数量。
  */
@@ -132,7 +132,9 @@ router.setCookListSocket = (socket) => {
 }
 
 function myemit(socket, command, payload) {
-    if(socket.hasOwnProperty('emit')) {
+    console.log('socket emit command is called ' + command  + ' ' + payload);
+    if(socket.id != 0) {
+        console.log('emit command is called');
         socket.emit(command, payload);
     }
 }

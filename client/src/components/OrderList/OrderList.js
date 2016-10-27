@@ -78,7 +78,7 @@ class OrderList extends Component {
           <div className="App">
               <div className="ui text container">
                     <button className="ui left floated button" onClick={this.handleClick.bind(this)}>新订单</button>
-                  <Table celled>
+                  <Table celled unstackable>
                       <Table.Header>
                           <Table.Row>
                               <Table.HeaderCell> 要处理的消息 </Table.HeaderCell>

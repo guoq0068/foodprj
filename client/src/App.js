@@ -275,7 +275,7 @@ class ItemList extends Component {
     );
     return (
         <div id='food-search'>
-          <table className='ui selectable structured large table'>
+          <table className='ui unstackable selectable structured large table'>
             <thead>
             <tr  hidden="true">
               <th colSpan='5'>
@@ -330,7 +330,7 @@ class SelectedItems extends Component {
 
   render() {
     return  (
-        <table className='ui selectable structured large table'>
+        <table className='ui unstackable selectable structured large table'>
           <thead>
           <tr>
             <th colSpan='1'>

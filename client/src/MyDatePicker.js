@@ -94,10 +94,10 @@ class MyDatePicker extends Component {
         return (
         <div id='date-picker'>
 
-            <table className='ui selectable structured large table'>
+            <table className='ui unstackable selectable structured large table'>
                 <tbody>
-                <tr>
-                    <td>
+                <tr colSpan="3">
+                    <td colSpan="1">
                         <Dropdown
                             fluid
                             options={options}
@@ -108,7 +108,7 @@ class MyDatePicker extends Component {
                             onChange={(e, {value})=>{this.handleChangeValue('day', value)}}
                         />
                     </td>
-                    <td>
+                    <td colSpan="1">
                         <Dropdown
                             fluid
                             options={options_hour}
@@ -119,7 +119,7 @@ class MyDatePicker extends Component {
                             onChange={(e, {value})=>{this.handleChangeValue('hour',  value)}}
                         />
                     </td>
-                    <td>
+                    <td colSpan="1">
                         <Dropdown
                             fluid
                             options={options_minute}

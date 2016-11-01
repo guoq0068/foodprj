@@ -38,6 +38,14 @@ router.get('/getmenulist', (req, res) => {
 router.get('/getcooklist', (req, res) => {
 
     const list = MyDb.get_cook_list();
+    
+
+    res.json(list);
+})
+
+
+router.get('/gettomorrowcooklist', (req, res) => {
+    const list = MyDb.get_tomorrow_cook_list();
 
     res.json(list);
 })

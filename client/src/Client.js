@@ -78,6 +78,13 @@ function getCookList() {
   }).then(parseJSON);
 }
 
+
+function getTommorrowCookList() {
+  return fetch(`/kittchen/gettomorrowcooklist`, {
+    accept: 'application/json'
+  }).then(parseJSON);
+
+}
 /**
  * 菜做好了，通知服务器端。
  * @param data
@@ -96,7 +103,7 @@ function postCookOver(data, foodname) {
 }
 
 const Client = { search, getItems, postSelectFood, getOrderNos, getCookList,
-                 postCookOver};
+                 postCookOver, getTommorrowCookList};
 
 
 export default Client;

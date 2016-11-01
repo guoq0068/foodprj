@@ -10,10 +10,16 @@ const db            = new sqlite.Database(filebuffer);
 
 const Buffer        = require('buffer').Buffer;
 
+const configfile    =  require('../Client');
+
 const COLUMNS_MENU = [
     'id',
     'name'
 ];
+
+const INTERVAL = 2;
+
+const MAXCOUNT = 5;
 /**
  * 根据开始和结束时间，获取在指定时间范围吃饭的订单的数量。
  * @param startTime
@@ -218,24 +224,86 @@ function save_db() {
 }
 
 /**
- * 获取要炒的菜的列表
+ * 智能获取列表的功能，两个小时内进行累加，两个小时之后的，自然排序。
+ * 当累加到单份最大值，就往后累加。
+ * @param beginTime
+ * @param endTime
+ * @returns {Array}
  */
-function get_cook_list() {
+function get_list_by_time_clever ( beginTime, endTime) {
+    var querystr  =
+        'select ' +
+        'orders.id, detail.itemid, detail.count, detail.singlename, orders.eattime, orders.orderno ' +
+        'from ' +
+        'orderdetail as detail, orders  where detail.orderid = orders.id and detail.status = 0 and ' +
+        'detail.orderid in ( ' +
+        'select id from orders where orders.eattime > '+ beginTime +' and eattime < ' + endTime
+        +') order by orders.eattime;';
 
-    var today     = new Date();
+    var r = db.exec(querystr);
 
-    today.setHours(0,0,0);
+    var keys = {};
+    var cooklist = [];
+    var date = new Date();
+    date.setHours(0, 0, 0);
+    var startTime = date.getTime();
+    var interval  = INTERVAL * 3600 * 1000;
 
-    var beginTime = today.getTime();
+    if(r[0]) {
+        if(r[0].values[0]) {
+            startTime = r[0].values[0][4];
+        }
+        r[0].values.map((entry) => {
+            var itemid = entry[1];
+            var time = entry[4];
 
-    today.setDate(today.getDate() + 1);
+            var diff = time - startTime;
+            console.log('' + diff + ' ' + interval);
+            //如果没有这个菜，或者做的菜在两个小时之后，在做饭列表立增加
+            if(typeof (keys[itemid]) == "undefined" || diff > interval) {
+                var length = cooklist.length;
+                //当新单在两个小时之内，才需要保存坐标，否则不需要，只是在后面添加就行。
+                if(diff < interval) {
+                    keys[itemid] = length;
+                }
+                cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
+                cooklist[length].orderdetail = [{orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
+            }
+            //如果有这个菜，在列表里增加一个
+            else {
+                var length = keys[itemid];
+                var newcount = cooklist[length].foodcount + parseInt(entry[2]);
+                console.log('newcount ' + newcount);
+                //饭菜的数目超出了最大数目, 那么还是把饭菜放在列表的最后。
+                if (newcount > MAXCOUNT) {
+                    length = cooklist.length;
+                    newcount = parseInt(entry[2]);
+                }
+                cooklist[length].foodcount = newcount;
+                cooklist[length].orderdetail = [
+                    ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
+            }
+        });
+    }
+    return cooklist;
+}
 
-    var endTime   = today.getTime();
-
-
-    var querystr  = 'select orders.id, detail.itemid, detail.count, detail.singlename, orders.eattime, orders.orderno from orderdetail ' +
-        'as detail, orders  where detail.orderid = orders.id and detail.status = 0 and detail.orderid in ( ' +
-        'select id from orders where orders.eattime > '+ beginTime +' and eattime < ' + endTime +') order by orders.eattime;';
+/**
+ * 根据时间获取列表。
+ * @param beginTime
+ * @param endTime
+ * @returns {Array}
+ */
+function get_list_by_time ( beginTime, endTime) {
+    var querystr  =
+        'select ' +
+        'orders.id, detail.itemid, detail.count, detail.singlename, orders.eattime, orders.orderno ' +
+        'from ' +
+        'orderdetail as detail, orders  where detail.orderid = orders.id and detail.status = 0 and ' +
+        'detail.orderid in ( ' +
+        'select id from orders where orders.eattime > '+ beginTime +' and eattime < ' + endTime
+        +') order by orders.eattime;';
 
     var r = db.exec(querystr);
 
@@ -262,9 +330,51 @@ function get_cook_list() {
             }
         });
     }
+    return cooklist;
+}
+
+/**
+ * 获取要炒的菜的列表
+ */
+function get_cook_list() {
+
+    var today     = new Date();
+
+    today.setHours(0,0,0);
+
+    var beginTime = today.getTime();
+
+    today.setDate(today.getDate() + 1);
+
+    var endTime   = today.getTime();
+
+
+    var cooklist = get_list_by_time_clever(beginTime, endTime);
 
     return cooklist;
 
+}
+
+
+/**
+ * 获取明日要炒的菜的列表
+ */
+function get_tomorrow_cook_list() {
+    var date = new Date();
+
+    date.setHours(0, 0 , 0);
+
+    date.setDate(date.getDate() + 1);
+
+    var beginTime = date.getTime();
+
+    date.setDate(date.getDate() + 1);
+
+    var endTime = date.getTime();
+
+    var cooklist = get_list_by_time(beginTime, endTime);
+
+    return cooklist;
 }
 
 exports.get_menu_list       =   get_menu_list;
@@ -286,3 +396,7 @@ exports.update_order_status =   update_order_status;
 exports.get_unfinished_food_count = get_unfinished_food_count;
 
 exports.update_order_list_status  = update_order_list_status;
+
+exports.get_tomorrow_cook_list = get_tomorrow_cook_list;
+
+exports.get_list_by_time_clever = get_list_by_time_clever;

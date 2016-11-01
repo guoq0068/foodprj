@@ -5,10 +5,7 @@ import  React, {Component} from 'react';
 import {withRouter} from 'react-router';
 import io from 'socket.io-client';
 import {Table} from 'semantic-ui-react';
-
-
-const IP = '192.168.1.104';
-const PORT = 3000;
+import ConfigFile from '../../ConfigFile';
 
 
 class OrderList extends Component {
@@ -24,7 +21,7 @@ class OrderList extends Component {
 
 
     initSocket() {
-        var socket = io('http://' + IP + ':' + PORT);
+        var socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
         socket.on('orderfinished', this.orderFinishedNotify.bind(this));
         socket.on('foodfinished', this.foodFinishedNotify.bind(this) );
         socket.emit('orderlist','hello' );

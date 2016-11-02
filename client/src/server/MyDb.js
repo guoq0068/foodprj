@@ -233,7 +233,7 @@ function save_db() {
 function get_list_by_time_clever ( beginTime, endTime) {
     var querystr  =
         'select ' +
-        'orders.id, detail.itemid, detail.count, detail.singlename, orders.eattime, orders.orderno ' +
+        'orders.id, detail.itemid, detail.count, detail.singlename, orders.eattime, orders.orderno, orders.comment ' +
         'from ' +
         'orderdetail as detail, orders  where detail.orderid = orders.id and detail.status = 0 and ' +
         'detail.orderid in ( ' +
@@ -267,7 +267,8 @@ function get_list_by_time_clever ( beginTime, endTime) {
                     keys[itemid] = length;
                 }
                 cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
-                cooklist[length].orderdetail = [{orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
+                cooklist[length].orderdetail = [
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
             }
             //如果有这个菜，在列表里增加一个
             else {
@@ -282,7 +283,7 @@ function get_list_by_time_clever ( beginTime, endTime) {
                 cooklist[length].foodcount = newcount;
                 cooklist[length].orderdetail = [
                     ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
-                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
             }
         });
     }
@@ -318,7 +319,8 @@ function get_list_by_time ( beginTime, endTime) {
                 var length = cooklist.length;
                 keys[itemid] = length;
                 cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
-                cooklist[length].orderdetail = [{orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
+                cooklist[length].orderdetail = [
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
             }
             //如果有这个菜，在列表里增加一个
             else {
@@ -326,7 +328,7 @@ function get_list_by_time ( beginTime, endTime) {
                 cooklist[length].foodcount = cooklist[length].foodcount + parseInt(entry[2]);
                 cooklist[length].orderdetail = [
                     ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
-                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1]}];
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
             }
         });
     }

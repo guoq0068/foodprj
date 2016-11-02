@@ -24,6 +24,7 @@ class App extends Component {
       },
       ordersNums : [],
       currentSelectDay : 0,
+      commment : '',
     };
 
     this.initState();
@@ -151,7 +152,7 @@ class App extends Component {
     var ordertime = new Date().getTime();
 
     var params = {
-      memo:"不要辣",
+      memo: this.state.commment,
       data: this.state.selectedFoods,
       ordertime : ordertime,
       dinnertime : this.state.dinnerTime.utcValue,
@@ -187,6 +188,20 @@ class App extends Component {
           {currentSelectDay: parseInt(value.day)});
   }
 
+
+  /**
+   * 处理输入框文字变化的事件，更新控件状态。
+   * @param e
+     */
+  handleInputChange(e) {
+    this.setState(
+        {
+          commment: e.target.value,
+        }
+    );
+  }
+
+
   render() {
     return (
       <div className='App'>
@@ -201,6 +216,7 @@ class App extends Component {
                   onConfimClick={this.handleSubmit.bind(this)}
                   ordersNums = {this.state.ordersNums}
                   currentSelectDay = {this.state.currentSelectDay}
+                  onChangeVaule = {this.handleInputChange.bind(this)}
               />
               <ItemList
                   onFoodSelect= {this.handleItemClick.bind(this)}
@@ -334,16 +350,20 @@ class SelectedItems extends Component {
           <thead>
           <tr>
             <th colSpan='1'>
-              <h3>用户订餐({this.props.ordersNums[this.props.currentSelectDay]}份)</h3>
+              <h3>用户订餐 &nbsp;&nbsp;(&nbsp;&nbsp;今天第 {this.props.ordersNums[this.props.currentSelectDay]} 单，加油！)</h3>
             </th>
             <th>
               <button className="ui right floated button"
-              onClick={this.props.onConfimClick}>确定</button>
+              onClick={(e) => this.props.onConfimClick(e)}>确定</button>
             </th>
           </tr>
+
           <tr>
-            <th>菜名</th>
-            <th>份数</th>
+            <th colSpan="2">
+            <div className="ui fluid icon input">
+              <input type="text" placeholder="请输入备注" onChange={(e) => {this.props.onChangeVaule(e)}}/>
+            </div>
+              </th>
           </tr>
           </thead>
           <tbody>

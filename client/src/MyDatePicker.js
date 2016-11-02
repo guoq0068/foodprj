@@ -11,29 +11,30 @@ const options = [
 ];
 
 const options_hour = [
-    { text:'08', value: '08'},
-    { text:'09', value: '09'},
-    { text:'10', value: '10'},
-    { text:'11', value: '11'},
-    { text:'12', value: '12'},
-    { text:'13', value: '13'},
-    { text:'14', value: '14'},
-    { text:'15', value: '15'},
-    { text:'16', value: '16'},
-    { text:'17', value: '17'},
-    { text:'18', value: '18'},
-    { text:'19', value: '19'},
-    { text:'20', value: '20'},
-    { text:'21', value: '21'},
+    { text:'08点', value: '08'},
+    { text:'09点', value: '09'},
+    { text:'10点', value: '10'},
+    { text:'11点', value: '11'},
+    { text:'12点', value: '12'},
+    { text:'13点', value: '13'},
+    { text:'14点', value: '14'},
+    { text:'15点', value: '15'},
+    { text:'16点', value: '16'},
+    { text:'17点', value: '17'},
+    { text:'18点', value: '18'},
+    { text:'19点', value: '19'},
+    { text:'20点', value: '20'},
+    { text:'21点', value: '21'},
+    { text:'22点', value: '22'}
 ];
 
 const options_minute = [
-    { text:'00', value: '00'},
-    { text:'10', value: '10'},
-    { text:'20', value: '20'},
-    { text:'30', value: '30'},
-    { text:'40', value: '40'},
-    { text:'50', value: '50'},
+    { text:'00分', value: '00'},
+    { text:'10分', value: '10'},
+    { text:'20分', value: '20'},
+    { text:'30分', value: '30'},
+    { text:'40分', value: '40'},
+    { text:'50分', value: '50'},
 ];
 
 class MyDatePicker extends Component {

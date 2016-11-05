@@ -143,6 +143,15 @@ router.post('/postcookover', (req, res) => {
     MyDb.save_db();
 });
 
+
+router.get(/^\/getmessages/, (req, res) => {
+    var kitchenid = req.query.kitchenid;
+
+    var result = MyDb.get_messages(kitchenid);
+
+    res.json(result);
+})
+
 router.setMySocket = (socket) => {
     mySocket   = socket;
 }
@@ -159,4 +168,16 @@ function myemit(socket, command, payload) {
     }
 }
 
+
+/**
+ * 更新消息列表的状态为完成
+ * @param data
+ */
+function updateMessageStatus(data) {
+
+    MyDb.update_msg_status(data);
+}
+
 module.exports = router;
+
+exports.updateMessageStatus  = updateMessageStatus;

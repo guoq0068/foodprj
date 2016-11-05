@@ -204,7 +204,7 @@ function update_order_list_status(orderid) {
     var date = new Date();
 
     sqlStr = `INSERT INTO msgs (orderid, foodid, msgstatus, msgtime, msgtype) VALUES(
-         ${orderid}, 0, ${MSG_STATE_NOT_DEALED} , ${date.getTime()}, ${MSG_TYPE_FOOD_FINISHED})`;
+         ${orderid}, 0, ${MSG_STATE_NOT_DEALED} , ${date.getTime()}, ${MSG_TYPE_ORDER_FINISHED})`;
 
 
 
@@ -440,6 +440,61 @@ function get_tomorrow_cook_list() {
     return cooklist;
 }
 
+/**
+ * 更新消息表中消息处理的状态
+ * @param data
+ */
+function update_msg_status(data) {
+
+    var sqlStr = `update msgs set msgstatus = 1 where orderid = ${data.orderid} 
+        and foodid = ${data.foodid};`;
+
+    db.run(sqlStr);
+}
+
+
+/**
+ *  获取未处理的消息
+ * @param kitchenid
+ */
+function get_messages(kitchenid) {
+    var date = new Date();
+
+    date.setHours(0, 0 , 0);
+
+    var startTime = date.getTime();
+
+    date.setDate(date.getDate() + 1);
+
+    var endTime = date.getTime();
+    var sqlStr = `select msgs.orderid,  menu.name,  menukind.name, orders.orderno, msgs.foodid 
+                 from msgs, orders, kitchenmenukinds as menukind, menu 
+                 where orders.id = msgs.orderid and menukind.id = orders.menukind and menu.id = msgs.foodid 
+                       and msgs.msgstatus = 0 and orders.kitchenid = ${kitchenid} and 
+                       (msgs.msgtime > ${startTime}  and msgs.msgtime < ${endTime} );
+                        `;
+
+    var r = db.exec(sqlStr);
+
+    var result = [];
+    if(r[0]) {
+
+        r[0].values.map((message) => {
+            result = [
+                {orderid : message[0],
+                 foodid  : message[4],
+                 foodname : message[1],
+                 menukind: message[2],
+                 orderno : message[3]},
+                ...result.slice(0, result.length)
+            ]
+        })
+
+    }
+
+    return result;
+}
+
 exports.get_menu_list       =   get_menu_list;
 
 exports.get_count_from_db   =   get_count_from_db;
@@ -463,4 +518,9 @@ exports.update_order_list_status  = update_order_list_status;
 exports.get_tomorrow_cook_list = get_tomorrow_cook_list;
 
 exports.get_list_by_time_clever = get_list_by_time_clever;
+
 exports.get_menu_name           = get_menu_name;
+
+exports.update_msg_status       = update_msg_status;
+
+exports.get_messages            = get_messages;

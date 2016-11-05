@@ -1,11 +1,11 @@
 var express        =   require('express');
 var bodyParser     =   require("body-parser");
 
-var myutil         =    require("./src/server/MyUtil");
-
 var app            =    express();
 
 var kittchen       =    require('./src/server/router/Kittchen');
+
+var MyDb            = require('./src/server/MyDb')
 
 
 
@@ -52,6 +52,14 @@ io.sockets.on('connect', function (socket) {
         console.log('orderlis is called');
         kittchen.setCookListSocket(socket);
     });
+
+    socket.on('message', function(payload) {
+        var data = JSON.parse(payload);
+
+        if(data.msgtype == 'dealend') {
+            MyDb.update_msg_status(data);
+        }
+    })
 });
 
 console.log('Server is running at http://' + ip + ':' + port);

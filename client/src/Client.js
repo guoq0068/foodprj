@@ -101,6 +101,18 @@ function getTommorrowCookList() {
   }).then(parseJSON);
 
 }
+
+/**
+ * 获取未处理的消息列表
+ * @param kitchenid
+ * @returns {*|Promise.<TResult>}
+ */
+function getMessages(kitchenid) {
+
+  return fetch(`/kittchen/getmessages?kitchenid=${kitchenid}`, {
+    accept: 'application/json'
+  }).then(parseJSON);
+}
 /**
  * 菜做好了，通知服务器端。
  * @param data
@@ -119,7 +131,7 @@ function postCookOver(data, foodname) {
 }
 
 const Client = { search, getItems, postSelectFood, getOrderNos, getCookList,
-                 postCookOver, getTommorrowCookList};
+                 postCookOver, getTommorrowCookList, getMessages};
 
 
 export default Client;

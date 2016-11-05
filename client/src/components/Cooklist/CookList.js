@@ -10,11 +10,6 @@ import ConfigFile from '../../ConfigFile';
 
 
 
-const PORT = 3000;
-
-
-
-
 class CookList extends Component {
 
     initSocket() {
@@ -101,17 +96,47 @@ class CookList extends Component {
         )
     }
 
+    getComments(cook) {
+        var orders = cook.orderdetail;
+        var result = '';
+
+        orders.map((order) => {
+           if(order.comment) {
+               result = (<div className = "ui big segment">
+                   <font color="red">{cook.foodcount} </font>
+                      份要做成
+                   <font color="red">
+                        &nbsp;{order.comment}
+                    </font></div>);
+           }
+        });
+
+        if(result != '') {
+            result = (<div classname = "ui segments">  {result} </div>);
+        }
+        console.log('getComments' + result);
+        return result;
+    }
+
     render() {
         return (
             <div className="App">
                 <div className="ui text container">
                     <div>
-                        <div className="ui raised center aligned orange inverted massive segment "
-                        onClick = {()=>(this.handleClick(0, this.state.cookList[0]))}>
-                            {this.state.cookList[0] ? this.state.cookList[0].foodname : '请先休息一下吧'}
+                        <div className="ui segments">
+                            <div className="ui raised left aligned orange inverted massive segment "
+                            onClick = {()=>(this.handleClick(0, this.state.cookList[0]))}>
+                                {this.state.cookList[0] ? this.state.cookList[0].foodname : '请先休息一下吧'}
+                            </div>
+                            <div className = 'ui segments'>
+                                {
+                                    this.state.cookList[0] ? this.getComments(this.state.cookList[0])
+                                        : '辛苦了，大厨，请休息一下吧！'
+                                }
+                            </div>
                         </div>
                     </div>
-                    <table className='ui unstackable selectable structured large table'>
+                    <table className='ui unstackable  structured large table'>
                         <thead>
                             <tr>
                                 <th colSpan="3" className="left aligned">
@@ -123,6 +148,7 @@ class CookList extends Component {
                         <tbody>
                         {
                             this.state.cookList.map((cook, idx) => (
+                                idx == 0? '' : (
                                 <tr key={idx}
                                     onClick = {() => (this.handleClick(idx, cook))}
                                 >
@@ -134,7 +160,7 @@ class CookList extends Component {
                                     </td>
                                     <td>{cook.foodcount}</td>
                                 </tr>
-                            ))
+                            )))
                         }
                         </tbody>
                     </table>

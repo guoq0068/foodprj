@@ -6,7 +6,9 @@ import {withRouter} from 'react-router';
 import io from 'socket.io-client';
 import {Table} from 'semantic-ui-react';
 import ConfigFile from '../../ConfigFile';
+import Client from '../../Client';
 
+var socket;
 
 class OrderList extends Component {
 
@@ -17,11 +19,38 @@ class OrderList extends Component {
         this.state = {
             messages: []
         };
+        Client.getMessages(ConfigFile.KittchenId).then((messages) => {
+            var content = '';
+
+            var tempmsgs = [];
+            messages.map((message) => {
+                if(message.foodid == 0) {
+                    content = message.menukind + '的第 ' + message.orderno  +  ' 订单做完了，请叫快递'
+                }
+                else {
+                    content = message.foodname + ' 做好了，请装在第 ' + message.orderno + ' 号订单袋中。 (' +
+                        message.menukind + ')';
+
+                }
+
+                tempmsgs = [
+                    {content:content, orderid: message.orderid, foodid:message.foodid},
+                    ...tempmsgs.slice(0, tempmsgs.length)
+                ]
+
+
+            });
+
+            this.setState({
+                messages: tempmsgs
+            })
+
+        });
     }
 
 
     initSocket() {
-        var socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
+        socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
         socket.on('orderfinished', this.orderFinishedNotify.bind(this));
         socket.on('foodfinished', this.foodFinishedNotify.bind(this) );
         socket.emit('orderlist','hello' );
@@ -41,6 +70,7 @@ class OrderList extends Component {
         var menuname  = json.menuname;
 
         var datas    = JSON.parse(json.data);
+
 
         datas.map((data) => {
             var message = foodname + ' 做好了，请装在第 ' + data.orderno + ' 号订单袋中。 (' + menuname + ')';
@@ -75,6 +105,32 @@ class OrderList extends Component {
         this.props.router.push("/newOrder/" + id);
     }
 
+    /**
+     * Todo: need to support
+     * @param orderid
+     * @param foodid
+     */
+    handleItemClick(orderid, foodid, idx) {
+        console.log(orderid + ' ' + foodid)
+        var message = {
+            orderid: orderid,
+            foodid: foodid,
+            msgtype: 'dealend',
+            kitchenid: ConfigFile.kitchenid
+        }
+
+        var str = JSON.stringify(message);
+        socket.emit("message", str);
+
+        this.setState( {
+            messages: [
+                ...this.state.messages.slice(0, idx),
+                ...this.state.messages.slice(idx + 1, this.state.messages.length)
+            ]}
+        );
+    }
+
+
     render() {
         return (
           <div className="App">
@@ -94,8 +150,9 @@ class OrderList extends Component {
                           {
                               this.state.messages.map(
                                   (message, idx) => (
-                                    <Table.Row>
-                                        <Table.Cell>
+                                    <Table.Row key={idx}
+                                               onClick = {(e)=>{this.handleItemClick(message.orderid, message.foodid,idx)}}>
+                                        <Table.Cell >
                                             {message.content}
                                         </Table.Cell>
                                     </Table.Row>

@@ -17,7 +17,13 @@ const COLUMNS_MENU = [
     'name'
 ];
 
-const INTERVAL = 2;
+const MSG_TYPE_FOOD_FINISHED = 1;
+const MSG_TYPE_ORDER_FINISHED = 2;
+
+const MSG_STATE_NOT_DEALED = 0;
+const MSG_STATE_DEALED = 1;
+
+const INTERVAL = 2;   //菜单的时间间隔
 
 const MAXCOUNT = 5;
 /**
@@ -107,7 +113,7 @@ function  insert_order_list(ordertime, dinnertime, memo, orderno, kitchenid, men
         '"' + memo + '"' + ', 0 ,' +
         orderno + ', ' + kitchenid + ', ' + menukind +
         ');';
-    
+
     db.run(sqlStr);
 
     sqlStr = 'select id from orders where ordertime = ' + ordertime;
@@ -147,26 +153,75 @@ function insert_order_detail(itemid, orderid, count, name) {
  * @param item
  */
 function update_order_status(item) {
+
+    //订单状态更新为完成
     var sqlStr = 'UPDATE orderdetail set status = 1 where orderid = ' + item.orderid + ' and itemid = ' + item.foodid +';';
 
     db.run(sqlStr);
+
+    var date = new Date();
+
+    /**
+     * msgtype: 1: 菜炒完类型消息  2： 订单完成类型消息
+     * @type {string}
+     */
+    sqlStr = `INSERT INTO msgs (orderid, foodid, msgstatus, msgtime, msgtype) VALUES(
+         ${item.orderid},${item.foodid}, ${MSG_STATE_NOT_DEALED} , ${date.getTime()}, ${MSG_TYPE_FOOD_FINISHED})`;
+
+    db.run(sqlStr);
+
 }
 
 
+function get_menu_name(orderid)
+{
+
+    var sqlStr = 'SELECT menu.name from kitchenmenukinds as menu, orders where menu.id = orders.menukind and orders.id = '
+        + orderid + ';';
+
+    var r = db.exec(sqlStr);
+
+    var menuname = '';
+    if(r[0]) {
+
+        menuname = r[0].values[0][0];
+    }
+
+    return menuname;
+}
+
+/**
+ * 更新订单列表中订单的状态（目前处理的有点啰嗦，以后可以考虑优化一下。
+ * @param orderid
+ * @returns {{orderid: number, orderno: number, eattime: number, details: Array}}
+ */
 function update_order_list_status(orderid) {
 
     var sqlStr =  'UPDATE orders set status = 1  where id = ' + orderid + ' ;';
 
     db.run(sqlStr);
 
+    var date = new Date();
+
+    sqlStr = `INSERT INTO msgs (orderid, foodid, msgstatus, msgtime, msgtype) VALUES(
+         ${orderid}, 0, ${MSG_STATE_NOT_DEALED} , ${date.getTime()}, ${MSG_TYPE_FOOD_FINISHED})`;
+
+
+
+    db.run(sqlStr);
+
     var result = {
         orderid: 0,
+        foodid : 0,
         orderno: 0,
         eattime: 0,
         details: []
     };
 
-    sqlStr = 'SELECT id, orderno,  eattime, comment from orders where id = ' + orderid + '; ';
+    sqlStr = 'SELECT orders.id, orderno,  eattime, comment, menu.name from orders, kitchenmenukinds as menu ' +
+        'where orders.id = '
+        + orderid + ' and menu.id = orders.menukind; ';
+
 
     var r = db.exec(sqlStr);
 
@@ -177,6 +232,7 @@ function update_order_list_status(orderid) {
         result.orderno = values[1];
         result.eattime = values[2];
         result.comment = values[3];
+        result.menuname = values[4];
     }
 
     sqlStr = 'select  itemid, singlename, count ' +
@@ -263,7 +319,7 @@ function get_list_by_time_clever ( beginTime, endTime) {
             var time = entry[4];
 
             var diff = time - startTime;
-            console.log('' + diff + ' ' + interval);
+
             //如果没有这个菜，或者做的菜在两个小时之后，在做饭列表立增加
             if(typeof (keys[itemid]) == "undefined" || diff > interval) {
                 var length = cooklist.length;
@@ -279,7 +335,7 @@ function get_list_by_time_clever ( beginTime, endTime) {
             else {
                 var length = keys[itemid];
                 var newcount = cooklist[length].foodcount + parseInt(entry[2]);
-                console.log('newcount ' + newcount);
+
                 //饭菜的数目超出了最大数目, 那么还是把饭菜放在列表的最后。
                 if (newcount > MAXCOUNT) {
                     length = cooklist.length;
@@ -407,3 +463,4 @@ exports.update_order_list_status  = update_order_list_status;
 exports.get_tomorrow_cook_list = get_tomorrow_cook_list;
 
 exports.get_list_by_time_clever = get_list_by_time_clever;
+exports.get_menu_name           = get_menu_name;

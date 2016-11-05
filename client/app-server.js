@@ -49,7 +49,7 @@ io.sockets.on('connect', function (socket) {
     });
 
     socket.on('orderlist', function(payload) {
-
+        console.log('orderlis is called');
         kittchen.setCookListSocket(socket);
     });
 });

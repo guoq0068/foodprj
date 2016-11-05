@@ -104,9 +104,10 @@ router.post('/postcookover', (req, res) => {
 
     var message = {data:data, name:name};
 
-
     try {
         var unfinishedCount = 0;
+        
+        var orderid = 0;
         jsonStr = JSON.parse(data);
         jsonStr.map((item, idx) => {
 
@@ -125,7 +126,11 @@ router.post('/postcookover', (req, res) => {
 
                 myemit(cookListSocket, 'orderfinished', resultstr);
             }
+            
+            orderid = item.orderid;
         });
+
+        message.menuname = MyDb.get_menu_name(orderid);
 
         myemit(cookListSocket, 'foodfinished',  JSON.stringify(message));
 
@@ -147,6 +152,7 @@ router.setCookListSocket = (socket) => {
 }
 
 function myemit(socket, command, payload) {
+    
     if(socket.id != 0) {
 
         socket.emit(command, payload);

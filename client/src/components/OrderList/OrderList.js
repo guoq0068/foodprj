@@ -33,15 +33,18 @@ class OrderList extends Component {
      * @param payload
      */
     foodFinishedNotify(payload) {
+        console.log('foodfinished' + payload)
         var json = JSON.parse(payload);
 
         var foodname  = json.name;
 
+        var menuname  = json.menuname;
+
         var datas    = JSON.parse(json.data);
 
         datas.map((data) => {
-            var message = foodname + ' 做好了，请装在第 ' + data.orderno + ' 号订单袋中。 ';
-            this.state.messages = [{content:message},
+            var message = foodname + ' 做好了，请装在第 ' + data.orderno + ' 号订单袋中。 (' + menuname + ')';
+            this.state.messages = [{content:message,  orderid:data.orderid, foodid:data.foodid},
                 ...this.state.messages.slice(0, this.state.messages.length)];
 
 
@@ -56,10 +59,12 @@ class OrderList extends Component {
      * @param payload
      */
     orderFinishedNotify(payload) {
+        console.log('orderfinished' + payload);
         var json = JSON.parse(payload);
-        var message = '第 ' + json.orderno  +  ' 订单做完了，请叫快递' ;
+
+        var message = json.menuname + '的第 ' + json.orderno  +  ' 订单做完了，请叫快递' ;
         this.state.messages = [
-            {content:message},
+            {content:message, orderid:json.orderid, foodid:json.foodid},
             ...this.state.messages.slice(0, this.state.messages.length)
         ];
         this.setState({messages:this.state.messages});

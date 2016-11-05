@@ -14,9 +14,11 @@ var cookListSocket = {id: 0};
 /**
  *  获取今天和明天的订单数量。
  */
-router.get('/getordernums', (req, res) => {
+router.post('/getordernums', (req, res) => {
 
-    var result = MyUtil.get_order_no();
+    var kitchenid = req.body.kitchenid;
+    var menukind  = req.body.menukind;
+    var result = MyUtil.get_order_no(kitchenid, menukind);
 
     res.json(result);
 });
@@ -24,9 +26,12 @@ router.get('/getordernums', (req, res) => {
 /**
  * 获取厨房的菜单
  */
-router.get('/getmenulist', (req, res) => {
+router.post('/getmenulist', (req, res) => {
 
-    const list = MyDb.get_menu_list();
+    var kitchenid = req.body.kitchenid;
+    var menukind  = req.body.menukind;
+    
+    const list = MyDb.get_menu_list(kitchenid, menukind);
 
     res.json(list);
 
@@ -61,10 +66,12 @@ router.post('/postselectdata', (req, res)  => {
     var dinnertime  =   req.body.dinnertime;
     var orderno     =   req.body.orderno;
     var memo        =   req.body.memo;
+    var kitchenid   =   req.body.kitchenid;
+    var menukind    =   req.body.menukind;
 
     //var orderNum     =   MyDb.get_orders_num();
 
-    var orderId     = MyDb.insert_order_list(ordertime, dinnertime, memo, orderno);
+    var orderId     = MyDb.insert_order_list(ordertime, dinnertime, memo, orderno, kitchenid, menukind);
 
     try {
         jsonStr = JSON.parse(req.body.data);

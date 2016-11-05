@@ -24,11 +24,14 @@ const MAXCOUNT = 5;
  * 根据开始和结束时间，获取在指定时间范围吃饭的订单的数量。
  * @param startTime
  * @param endTime
+ * @param kitchenid
+ * @param menukind
  * @returns {number}
  */
-function get_count_from_db(startTime, endTime) {
+function get_count_from_db(startTime, endTime, kitchenid, menukind) {
     var result = 0;
-    var sqlstr = 'select count(*) from orders where eattime > ' + startTime + ' and eattime < ' + endTime;
+    var sqlstr = 'select count(*) from orders where eattime > ' + startTime + ' and eattime < ' + endTime +
+        ' and kitchenid = ' + kitchenid + ' and menukind = ' + menukind;
 
     const r = db.exec(sqlstr);
 
@@ -44,10 +47,10 @@ function get_count_from_db(startTime, endTime) {
  * 获取菜单详细内容。
  * @returns {*}
  */
-function get_menu_list() {
+function get_menu_list(kitchenid, menukind) {
     const r = db.exec(`
         select ${COLUMNS_MENU.join(', ')} from menu
-        where active = 1
+        where active = 1 and kitchenid = ${kitchenid} and menukind = ${menukind}
         `);
 
     var result = [];
@@ -94,15 +97,17 @@ function get_orders_num() {
  * @param dinnertime  用餐的时间
  * @param memo     订单的备注
  * @param orderno  当日订单的编号
+ * @param kitchenid 厨房的ID
+ * @param menukind  菜单的分类
  */
-function  insert_order_list(ordertime, dinnertime, memo, orderno) {
-    var sqlStr  =   'INSERT INTO orders(ordertime, eattime, comment, status, orderno) VALUES(' +
+function  insert_order_list(ordertime, dinnertime, memo, orderno, kitchenid, menukind) {
+    var sqlStr  =   'INSERT INTO orders(ordertime, eattime, comment, status, orderno, kitchenid, menukind) VALUES(' +
         ordertime + ', ' +
         dinnertime + ', ' +
         '"' + memo + '"' + ', 0 ,' +
-        orderno +
+        orderno + ', ' + kitchenid + ', ' + menukind +
         ');';
-
+    
     db.run(sqlStr);
 
     sqlStr = 'select id from orders where ordertime = ' + ordertime;

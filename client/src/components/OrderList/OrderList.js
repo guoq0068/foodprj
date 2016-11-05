@@ -65,16 +65,20 @@ class OrderList extends Component {
         this.setState({messages:this.state.messages});
     }
 
-    handleClick() {
+    handleClick(id) {
 
-        this.props.router.push("/newOrder");
+        this.props.router.push("/newOrder/" + id);
     }
 
     render() {
         return (
           <div className="App">
               <div className="ui text container">
-                    <button className="ui left floated button" onClick={this.handleClick.bind(this)}>新订单</button>
+                    <div className="ui top attached orange large buttons">
+                        <button className="ui  button" onClick={(e)=>{this.handleClick(1)}}>大菜订单</button>
+                        <div className="or"></div>
+                        <button className="ui  button" onClick={(e)=>{this.handleClick(2)}}>小菜订单</button>
+                    </div>
                   <Table celled unstackable>
                       <Table.Header>
                           <Table.Row>

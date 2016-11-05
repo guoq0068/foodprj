@@ -3,10 +3,8 @@ import Client from './Client';
 import io from 'socket.io-client';
 import MyDatePicker from './MyDatePicker';
 import {withRouter} from 'react-router';
+import Configfile from './ConfigFile';
 
-
-const IP = 'localhost';
-const PORT = 3000;
 
 class App extends Component {
 
@@ -25,11 +23,13 @@ class App extends Component {
       ordersNums : [],
       currentSelectDay : 0,
       commment : '',
+      kitchenid: Configfile.KittchenId,
+      menukind : this.props.params.id,
     };
 
     this.initState();
 
-    Client.getOrderNos().then((orders) => {
+    Client.getOrderNos(this.state.kitchenid, this.state.menukind).then((orders) => {
       this.setState({ordersNums:orders});
     });
   }
@@ -109,6 +109,10 @@ class App extends Component {
   handleItemClick(food) {
     var index = -1;
     var tempfood = {};
+
+    /*
+     在列表中找到是否食物已经在选中列表中，如果在，把索引记录下来。
+     */
     this.state.selectedFoods.map((selectfood, idx) => {
       if (selectfood.id == food.id) {
         index = idx;
@@ -116,6 +120,9 @@ class App extends Component {
       }
     });
 
+    /*
+     如果索引为-1，说明是新加的菜，把菜品添加到列表尾部，否则在之前的菜的数量加1。
+     */
     if(index != -1) {
 
       this.state.selectedFoods.splice(index, 1, {
@@ -156,7 +163,9 @@ class App extends Component {
       data: this.state.selectedFoods,
       ordertime : ordertime,
       dinnertime : this.state.dinnerTime.utcValue,
-      orderno :  this.state.ordersNums[this.state.currentSelectDay]
+      orderno :  this.state.ordersNums[this.state.currentSelectDay],  //是今天还是明天的订单号。
+      kitchenid: this.state.kitchenid,
+      menukind : this.state.menukind
     }
 
     Client.postSelectFood(params);
@@ -220,6 +229,8 @@ class App extends Component {
               />
               <ItemList
                   onFoodSelect= {this.handleItemClick.bind(this)}
+                  kitchenid = {this.state.kitchenid}
+                  menukind  = {this.state.menukind}
               />
           </div>
 
@@ -243,7 +254,7 @@ class ItemList extends Component {
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleSearchCancel = this.handleSearchCancel.bind(this);
-    Client.getItems().then((foods) => (
+    Client.getItems(this.props.kitchenid, this.props.menukind).then((foods) => (
         this.setState({
             matchingFoods: foods,
             showRemoveIcon: true,

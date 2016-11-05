@@ -29,9 +29,16 @@ function parseJSON(response) {
  * 获取菜单内容的接口
  * @returns {*|Promise.<TResult>}
  */
-function getItems() {
+function getItems(kitchenid, menukind) {
+
+  var body = 'kitchenid=' + kitchenid + '&menukind=' + menukind;
 
   return fetch(`/kittchen/getmenulist`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body,
     accept: 'application/json'
   }).then(parseJSON);
 }
@@ -40,8 +47,15 @@ function getItems() {
  * 获取订单数量
  * @returns {*|Promise.<TResult>}
  */
-function getOrderNos() {
+function getOrderNos(kitchenid, menukind) {
+
+  var body = 'kitchenid=' + kitchenid + '&menukind=' + menukind;
   return fetch(`/kittchen/getordernums`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body,
     accept: 'application/json'
   }).then(parseJSON);
 }
@@ -58,8 +72,10 @@ function postSelectFood(query) {
   body  = body + "&ordertime=" + query.ordertime;
   body  = body + "&dinnertime=" + query.dinnertime;
   body  = body + "&orderno=" + query.orderno;
+  body  = body + "&kitchenid=" + query.kitchenid;
+  body  = body + "&menukind="  + query.menukind;
 
-
+  console.log(body);
   fetch('/kittchen/postselectdata', {
     method: "POST",
     headers: {

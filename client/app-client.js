@@ -10,7 +10,7 @@ import './src/semantic-ui/semantic.min.css';
 ReactDOM.render(
     <Router history={hashHistory}>
         <Route path="/" component={OrderList} />
-        <Route path="/neworder" component={App} />
+        <Route path="/neworder/:id" component={App} />
         <Route path="/cooklist" component={CookList} />
         <Route path="/orderlist" component={OrderList} />
     </Router>,

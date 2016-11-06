@@ -6,6 +6,8 @@ import {withRouter} from 'react-router';
 import Configfile from './ConfigFile';
 
 
+const LATERENCE_FOR_EATTIME = 45 //吃饭时间距离下单时间一般是45分钟之后 
+
 class App extends Component {
 
 
@@ -39,6 +41,12 @@ class App extends Component {
    */
    initState() {
      var today  = new Date();
+     var time = today.getTime();
+
+     time = time + LATERENCE_FOR_EATTIME * 60 * 1000; //时间增加45分钟
+
+     today.setTime(time);
+
      var minute = today.getMinutes();
 
      minute     = (parseInt(minute / 10) + 1) * 10;

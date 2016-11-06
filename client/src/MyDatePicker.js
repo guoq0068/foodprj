@@ -54,10 +54,6 @@ class MyDatePicker extends Component {
 
     }
 
-    handleChangeDay(e, {value}) {
-        this.setState({day: value});
-    }
-
 
     handleChangeValue(type, value) {
 

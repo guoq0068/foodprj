@@ -61,6 +61,13 @@ class App extends Component {
        strMinute = strMinute + minute;
      }
 
+     if(hour < 8) {
+       hour = 8;
+     }
+
+    if(hour > 22) {
+      hour = 22;
+    }
      if(hour < 10) {
        strHour = strHour + hour;
      }

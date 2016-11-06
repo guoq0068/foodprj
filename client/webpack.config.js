@@ -18,8 +18,8 @@ if (inDev) {
     );
 }
 else {
-    plugins.push(
-        new webpack.optimize.UglifyJsPlugin());
+    //plugins.push(
+    //    new webpack.optimize.UglifyJsPlugin());
 }
 
 module.exports = {

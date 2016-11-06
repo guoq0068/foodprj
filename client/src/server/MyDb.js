@@ -56,7 +56,7 @@ function get_count_from_db(startTime, endTime, kitchenid, menukind) {
 function get_menu_list(kitchenid, menukind) {
     const r = db.exec(`
         select ${COLUMNS_MENU.join(', ')} from menu
-        where active = 1 and kitchenid = ${kitchenid} and menukind = ${menukind}
+        where active = 1 and kitchenid = ${kitchenid} and menukind = ${menukind} order by priority;
         `);
 
     var result = [];

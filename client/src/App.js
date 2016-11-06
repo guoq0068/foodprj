@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Client from './Client';
-import io from 'socket.io-client';
 import MyDatePicker from './MyDatePicker';
 import {withRouter} from 'react-router';
 import Configfile from './ConfigFile';

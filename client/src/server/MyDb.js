@@ -339,12 +339,16 @@ function get_list_by_time_clever ( beginTime, endTime) {
                 //饭菜的数目超出了最大数目, 那么还是把饭菜放在列表的最后。
                 if (newcount > MAXCOUNT) {
                     length = cooklist.length;
-                    newcount = parseInt(entry[2]);
+                    cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
+                    cooklist[length].orderdetail = [
+                        {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
                 }
-                cooklist[length].foodcount = newcount;
-                cooklist[length].orderdetail = [
-                    ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
-                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                else {
+                    cooklist[length].foodcount = newcount;
+                    cooklist[length].orderdetail = [
+                        ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
+                        {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                }
             }
         });
     }

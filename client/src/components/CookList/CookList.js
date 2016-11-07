@@ -9,13 +9,26 @@ import sound from '../../../res/alert.mp3';
 import ConfigFile from '../../ConfigFile';
 
 
+var socket;
 
 class CookList extends Component {
 
     initSocket() {
-        var socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
+        socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
         socket.on('neworder', this.getNewOrder.bind(this));
-        socket.emit('cooklist', 'hello');
+        socket.on('connect', this.onConnect.bind(this));
+    }
+
+    onConnect() {
+        //链接成功，向服务器端发注册消息。
+        var message = {
+            type : 'register',
+            kittchenid : ConfigFile.KittchenId
+        }
+
+        var data = JSON.stringify(message)
+
+        socket.emit('cooklist', data);
     }
 
     getNewOrder() {

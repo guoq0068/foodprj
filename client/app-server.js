@@ -53,6 +53,11 @@ io.sockets.on('connect', function (socket) {
         kittchen.setCookListSocket(socket);
     });
 
+    socket.on('disconnect', function () {
+        console.log('remove is called');
+        kittchen.removeSocket(socket);
+    })
+
     socket.on('message', function(payload) {
         var data = JSON.parse(payload);
 

@@ -9,8 +9,8 @@ var MyUtil      = require('../MyUtil');
 
 var MyDb        = require('../MyDb');
 
-var mySocket = { id: 0};
-var cookListSocket = {id: 0};
+var mySocket = [];
+var cookListSocket = [];
 /**
  *  获取今天和明天的订单数量。
  */
@@ -153,19 +153,45 @@ router.get(/^\/getmessages/, (req, res) => {
 })
 
 router.setMySocket = (socket) => {
-    mySocket   = socket;
+    mySocket   = [socket,
+        ...mySocket.slice(0, mySocket.length)];
 }
 
 router.setCookListSocket = (socket) => {
-    cookListSocket = socket;
+
+    cookListSocket   = [socket,
+        ...cookListSocket.slice(0, cookListSocket.length)];
+
 }
 
-function myemit(socket, command, payload) {
-    
-    if(socket.id != 0) {
+router.removeSocket = (socket) => {
 
+    mySocket.map((item, idx) => {
+        if(item == socket) {
+            mySocket = [
+                ...mySocket.slice(0, idx),
+                ...mySocket.slice(idx + 1, mySocket.length)
+                ]
+        }
+
+    });
+
+
+    cookListSocket.map((item, idx) => {
+        if(item == socket) {
+            cookListSocket = [
+                ...cookListSocket.slice(0, idx),
+                ...cookListSocket.slice(idx + 1, cookListSocket.length)]
+        }
+    });
+
+}
+
+function myemit(sockets, command, payload) {
+
+    sockets.map((socket) => {
         socket.emit(command, payload);
-    }
+    })
 }
 
 

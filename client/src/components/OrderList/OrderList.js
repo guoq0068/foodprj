@@ -53,10 +53,22 @@ class OrderList extends Component {
         socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
         socket.on('orderfinished', this.orderFinishedNotify.bind(this));
         socket.on('foodfinished', this.foodFinishedNotify.bind(this) );
-        socket.emit('orderlist','hello' );
+        socket.on('connect', this.onConnect.bind(this))
+
     }
 
 
+    onConnect() {
+        //链接成功，向服务器端发注册消息。
+        var message = {
+            type : 'register',
+            kittchenid : ConfigFile.KittchenId
+        }
+
+        var data = JSON.stringify(message)
+
+        socket.emit('orderlist', data);
+    }
     /**
      * 一道菜做完的通知
      * @param payload

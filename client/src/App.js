@@ -40,6 +40,18 @@ class App extends Component {
    */
    initState() {
      var today  = new Date();
+     var hour = today.getHours();
+
+      if(hour < 8) {
+          hour = 8;
+          today.setHours(8, 0 , 0);
+      }
+
+      if(hour > 22) {
+          hour = 22;
+          today.setHours(22, 0, 0)
+      }
+
      var time = today.getTime();
 
      time = time + LATERENCE_FOR_EATTIME * 60 * 1000; //时间增加45分钟
@@ -56,9 +68,6 @@ class App extends Component {
 
      var strHour    = '0';
      var strMinute  = '';
-     var hour = today.getHours();
-
-
 
      if(minute == 0) {
        strMinute = '00';
@@ -68,13 +77,6 @@ class App extends Component {
        strMinute = strMinute + minute;
      }
 
-     if(hour < 8) {
-       hour = 8;
-     }
-
-    if(hour > 22) {
-      hour = 22;
-    }
      if(hour < 10) {
        strHour = strHour + hour;
      }

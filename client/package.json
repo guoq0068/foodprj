@@ -32,7 +32,8 @@
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
     "express": "^4.13.4",
-
+    "react-redux" : "^4.4.5",
+    "redux" : "^3.0.0",
     "fs": "0.0.2",
     "sql.js": "^0.3.2",
     "body-parser": "^1.14.1",

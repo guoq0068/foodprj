@@ -202,12 +202,13 @@ class CookList extends Component {
     }
 
     /*
-     <audio  ref='audio' autoPlay="autoplay" >
-     <source src ={this.state.soundurl}
-     type = 'audio/mp3'>
-     </source>
-     </audio>
 
+
+
+     <Audio
+     src = {sound}
+     playing = {this.state.playing}
+     />
      */
     render() {
         return (
@@ -281,11 +282,12 @@ class CookList extends Component {
                         }
                         </tbody>
                     </table>
+                    <audio  ref='audio' autoPlay="autoplay" >
+                        <source src ={this.state.soundurl}
+                                type = 'audio/mp3'>
+                        </source>
+                    </audio>
 
-                    <Audio
-                        src = {sound}
-                        playing = {this.state.playing}
-                        />
 
                 </div>
             </div>

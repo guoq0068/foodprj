@@ -9,9 +9,13 @@ import sound from '../../../res/alert.mp3';
 import ConfigFile from '../../ConfigFile';
 
 
+
+
 var socket;
 
 class CookList extends Component {
+
+
 
     initSocket() {
         socket = io('http://' + ConfigFile.IPAddr + ':' + ConfigFile.Port);
@@ -31,16 +35,73 @@ class CookList extends Component {
         socket.emit('cooklist', data);
     }
 
-    getNewOrder() {
 
+    playSound(content) {
+
+
+        //this.refs.audio.play();
+
+
+        var str = 'http://' + ConfigFile.IPAddr+ ':' + ConfigFile.Port + '/baidu/text2audio?content=' + content  +
+            '&cuid=768443e1-7347-45d9-99d4-3cf947242d84';
+
+        console.log(str);
+
+        this.setState({
+            soundurl: str
+        }, ()=>{
+            console.log(this.refs.audio);
+            this.refs.audio.load();
+            this.refs.audio.play();});
+
+    }
+    notifyUser(orders) {
+        var content = '亲，来新订单了！';
+        orders.map((order,idx) => {
+            content = content + order.name + order.count + "份。";
+        });
+
+        console.log(content);
+        this.playSound(content);
+    }
+
+
+    getOrderlist() {
         Client.getCookList().then((cooklist) => {
 
-            this.setState({
-                cookList:cooklist,
-                playing:true
+            var content = '亲，现在要做的菜！';
+
+
+            cooklist.map((cook, idx) => {
+                content += cook.foodname + cook.foodcount + "份。";
+                cook.orderdetail.map((order, idx) => {
+                    if (order.comment != '') {
+                        content += cook.count + "份要做成：" + cook.content + "。";
+                    }
+                });
             });
+
+
+            this.setState({
+                cookList: cooklist,
+                playing: true
+            });
+
+            if(!this.state.hasNewOrder) {
+                this.playSound(content);
+            }
         });
     }
+
+
+    getNewOrder(payload) {
+
+        this.state.hasNewOrder = true;
+        this.notifyUser(payload);
+        this.getOrderlist();
+    }
+
+
 
     constructor(props) {
         super(props);
@@ -49,10 +110,18 @@ class CookList extends Component {
             cookList:[],
             tomorrowCookList: [],
             playing: true,
-            beShowTomorrow: false
-        };
+            beShowTomorrow: false,
+            baidutoken : '',
+            soundurl : '',
+            hasNewOrder: false
+        }
+        ;
         this.initSocket();
-        this.getNewOrder();
+
+    }
+
+    componentDidMount() {
+        this.getOrderlist();
     }
 
     /**
@@ -72,6 +141,7 @@ class CookList extends Component {
             playing: false
         });
         Client.postCookOver(food.orderdetail, food.foodname).then(this.getNewOrder);
+        this.refs.audio.play();
     }
 
     /**
@@ -116,7 +186,7 @@ class CookList extends Component {
         orders.map((order) => {
            if(order.comment) {
                result = (<div className = "ui big segment">
-                   <font color="red">{cook.foodcount} </font>
+                   <font color="red">{order.count} </font>
                       份要做成
                    <font color="red">
                         &nbsp;{order.comment}
@@ -131,6 +201,14 @@ class CookList extends Component {
         return result;
     }
 
+    /*
+     <audio  ref='audio' autoPlay="autoplay" >
+     <source src ={this.state.soundurl}
+     type = 'audio/mp3'>
+     </source>
+     </audio>
+
+     */
     render() {
         return (
             <div className="App">
@@ -203,10 +281,12 @@ class CookList extends Component {
                         }
                         </tbody>
                     </table>
+
                     <Audio
                         src = {sound}
                         playing = {this.state.playing}
-                    />
+                        />
+
                 </div>
             </div>
         );

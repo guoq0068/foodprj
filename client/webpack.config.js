@@ -29,7 +29,19 @@ module.exports = {
         path: path.join(__dirname, '/public')
     },
     plugins: plugins,
-
+    devServer: {
+        //其实很简单的，只要配置这个参数就可以了  
+        proxy: {
+            '/oauth/*': {
+                target: 'https://openapi.baidu.com',
+                secure: true
+            },
+            '/text2audio/*':{
+                target: 'http://tsn.baidu.com',
+                secure: false
+            }
+        }
+    },
     module: {
         loaders: [{
             exclude: /(node_modules|app-server.js)/,

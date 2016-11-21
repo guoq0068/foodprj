@@ -1,5 +1,6 @@
 
 import 'whatwg-fetch';
+import './ConfigFile';
 
 function search(query) {
   return fetch(`/api/food?q=${query}`, {
@@ -130,8 +131,26 @@ function postCookOver(data, foodname) {
   }).then(checkStatus);
 }
 
+
+
+function getBaiduSound(text, cuid, token) {
+  var body = 'content=' + text + '&lan=zh&cuid' + cuid;
+  console.log(body);
+  return fetch('/baidu/text2audio', {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body
+  }).then((res) => {
+    return res.body;
+  });
+
+}
+
 const Client = { search, getItems, postSelectFood, getOrderNos, getCookList,
-                 postCookOver, getTommorrowCookList, getMessages};
+                 postCookOver, getTommorrowCookList, getMessages,
+                getBaiduSound};
 
 
 export default Client;

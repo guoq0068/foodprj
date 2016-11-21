@@ -7,6 +7,8 @@ var kittchen       =    require('./src/server/router/Kittchen');
 
 var MyDb            = require('./src/server/MyDb')
 
+var mbaidu           = require('./src/server/router/MyBaidu')
+
 
 
 app.use(express.static('./public'));
@@ -31,6 +33,8 @@ app.use(require('webpack-dev-middleware')(compiler, {
 app.use(require('webpack-hot-middleware')(compiler));
 
 app.use('/kittchen',kittchen);
+app.use('/baidu', mbaidu);
+
 
 
 // -----------------------------------
@@ -50,6 +54,7 @@ io.sockets.on('connect', function (socket) {
 
     socket.on('orderlist', function(payload) {
         console.log('orderlis is called');
+
         kittchen.setCookListSocket(socket);
     });
 
@@ -67,4 +72,5 @@ io.sockets.on('connect', function (socket) {
     })
 });
 
+mbaidu.getOauthToken();
 console.log('Server is running at http://' + ip + ':' + port);

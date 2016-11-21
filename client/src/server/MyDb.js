@@ -329,7 +329,8 @@ function get_list_by_time_clever ( beginTime, endTime) {
                 }
                 cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
                 cooklist[length].orderdetail = [
-                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6],
+                    count: parseInt(entry[2])}];
             }
             //如果有这个菜，在列表里增加一个
             else {
@@ -341,13 +342,15 @@ function get_list_by_time_clever ( beginTime, endTime) {
                     length = cooklist.length;
                     cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
                     cooklist[length].orderdetail = [
-                        {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                        {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6],
+                        count : parseInt(entry[2])}];
                 }
                 else {
                     cooklist[length].foodcount = newcount;
                     cooklist[length].orderdetail = [
                         ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
-                        {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                        {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6],
+                        count : parseInt(entry[2])}, ];
                 }
             }
         });
@@ -385,7 +388,8 @@ function get_list_by_time ( beginTime, endTime) {
                 keys[itemid] = length;
                 cooklist[length] = {foodid:entry[1], foodname:entry[3], foodcount:parseInt(entry[2])};
                 cooklist[length].orderdetail = [
-                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6],
+                    count:parseInt(entry[2])}];
             }
             //如果有这个菜，在列表里增加一个
             else {
@@ -393,7 +397,8 @@ function get_list_by_time ( beginTime, endTime) {
                 cooklist[length].foodcount = cooklist[length].foodcount + parseInt(entry[2]);
                 cooklist[length].orderdetail = [
                     ...cooklist[length].orderdetail.slice(0, cooklist[length].orderdetail.length),
-                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6]}];
+                    {orderid:entry[0], orderno:entry[5], eattime:entry[4], foodid:entry[1], comment:entry[6],
+                    count: parseInt(entry[2])}];
             }
         });
     }

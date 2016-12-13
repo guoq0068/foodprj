@@ -562,13 +562,13 @@ function get_company_submenu_list(kitchenid, companyid) {
     return result;
 }
 
-function insert_company_order(companyid, phoneno, submenuid) {
+function insert_company_order(companyid, phoneno, submenuid, ip) {
     var today = new Date();
 
     var time = today.getTime();
 
-    var sqlStr = `INSERT into companyorderdetail(companysubmenuid, ordertime, phoneno) 
-        VALUES(${submenuid}, ${time}, ${phoneno})`;
+    var sqlStr = `INSERT into companyorderdetail(companysubmenuid, ordertime, phoneno, ip) 
+        VALUES(${submenuid}, ${time}, ${phoneno}, "${ip}")`;
 
     console.log(sqlStr);
     db.run(sqlStr);

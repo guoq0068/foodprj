@@ -27,6 +27,13 @@ router.post('/getMenuList', (req, res) => {
     res.json(result);
 });
 
+
+function getClientIp(req) {
+    return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+};
 router.post('/postCompanyOrder', (req,res) => {
     var companyid = req.body.companyid;
 
@@ -34,7 +41,9 @@ router.post('/postCompanyOrder', (req,res) => {
 
     var phoneno =   req.body.phoneno;
 
-    myDb.inset_company_order(companyid, phoneno, submenid);
+    var ip = getClientIp(req);
+
+    myDb.inset_company_order(companyid, phoneno, submenid, ip);
 
     myDb.save_db();
 

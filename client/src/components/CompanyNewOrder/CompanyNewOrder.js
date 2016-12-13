@@ -108,7 +108,7 @@ class CompanyNewOrder extends  Component {
 
         today.setDate(today.getDate() + 1);
 
-        var timestr = today.getMonth() + "月" + today.getDay() + '日';
+        var timestr = (today.getMonth() + 1) + "月" + today.getDate() + '日';
 
         var str = '';
         if(today.getHours() < END_TIME) {
@@ -126,7 +126,7 @@ class CompanyNewOrder extends  Component {
                         <thead>
                         <tr>
                             <th colSpan="3" className="center aligned">
-                                HiGo 营养餐 <font color = 'red'>{timestr} </font> 菜单 ({str})
+                                HIGO 营养餐 <font color = 'red'>{timestr} </font> 菜单 ({str})
                             </th>
                         </tr>
                         </thead>

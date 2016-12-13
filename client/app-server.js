@@ -5,9 +5,11 @@ var app            =    express();
 
 var kittchen       =    require('./src/server/router/Kittchen');
 
-var MyDb            = require('./src/server/MyDb')
+var MyDb            = require('./src/server/MyDb');
 
-var mbaidu           = require('./src/server/router/MyBaidu')
+var mbaidu           = require('./src/server/router/MyBaidu');
+
+var MyCompany        =  require('./src/server/router/Company');
 
 
 
@@ -34,6 +36,7 @@ app.use(require('webpack-hot-middleware')(compiler));
 
 app.use('/kittchen',kittchen);
 app.use('/baidu', mbaidu);
+app.use('/company', MyCompany);
 
 
 

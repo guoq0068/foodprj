@@ -133,7 +133,7 @@ function postCookOver(data, foodname) {
 
 
 
-function getBaiduSound(text, cuid, token) {
+function getBaiduSound(text, cuid) {
   var body = 'content=' + text + '&lan=zh&cuid' + cuid;
   console.log(body);
   return fetch('/baidu/text2audio', {
@@ -148,9 +148,59 @@ function getBaiduSound(text, cuid, token) {
 
 }
 
+/********************************
+ *  company function begin
+ ********************************/
+
+/**
+ * 获取企业列表
+ * @param kitchenid
+ * @returns {*|Promise.<TResult>}
+ */
+function getCompanyList(kitchenid) {
+  var body = `kitchenid=${kitchenid}`;
+  return fetch('/company/getList', {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body
+  }).then(parseJSON);
+
+}
+
+function getCompanyMenuList(kitchenid, companyid) {
+  var body = `kitchenid=${kitchenid}&companyid=${companyid}`;
+  return fetch('/company/getMenuList', {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body
+  }).then(parseJSON);
+
+}
+
+function postCompanyOrder(kitchenid, companyid, phoneno, submenuid) {
+  var body = `kitchenid=${kitchenid}&companyid=${companyid}&phoneno=${phoneno}&submenuid=${submenuid}`;
+  return fetch('/company/postCompanyOrder', {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body
+  }).then(parseJSON).catch(() => {return {'status':'error'};});
+
+}
+
+/********************************
+ *  company function end
+ ********************************/
+
 const Client = { search, getItems, postSelectFood, getOrderNos, getCookList,
                  postCookOver, getTommorrowCookList, getMessages,
-                getBaiduSound};
+                getBaiduSound,
+                getCompanyList, getCompanyMenuList, postCompanyOrder};
 
 
 export default Client;

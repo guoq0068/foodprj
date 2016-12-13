@@ -504,6 +504,76 @@ function get_messages(kitchenid) {
     return result;
 }
 
+/**
+ * 根据厨房id,获取团队的列表
+ * @param kitchenid
+ */
+function getCompanyList(kitchenid) {
+    
+}
+
+/**
+ * 根据厨房id,公司id获取改公司的明天的菜单
+ * 目前获取菜单的规则是, 今天只能下明天的单子,过12点之后就算明天了
+ * @param kitchenid
+ * @param companyid
+ */
+function get_company_submenu_list(kitchenid, companyid) {
+
+    var startTime = new Date();
+
+
+    var endTime   = new Date();
+
+    startTime.setHours(23, 59, 59, 999);
+
+    endTime.setDate(endTime.getDate() + 1);
+
+    endTime.setHours(23, 59, 59, 999);
+
+    var sqlStr = `select csmenu.id,  menu.name from companymenu as cmenu, companysubmenu as csmenu, menu 
+                    where csmenu.id = cmenu.companysubmenuid and cmenu.menuid = menu.id and 
+                    (csmenu.effecttime > ${startTime.getTime()} and csmenu.effecttime < ${endTime.getTime()});`;
+
+    console.log(sqlStr);
+
+    var r = db.exec(sqlStr);
+
+
+    var keys = [];
+    var result = [];
+    var length = 0;
+    if(r[0]) {
+        console.log(r[0].values);
+        r[0].values.map((item)=> {
+            var submenuid = item[0];
+            if(typeof (keys[submenuid]) == "undefined") {
+                result[length] = {'id': submenuid, 'values': item[1]};
+                keys[submenuid] = length;
+                length = length + 1;
+            }
+            else {
+                var index = keys[submenuid];
+                result[index].values = result[index].values + ',' +  item[1];
+            }
+        });
+    }
+
+    return result;
+}
+
+function insert_company_order(companyid, phoneno, submenuid) {
+    var today = new Date();
+
+    var time = today.getTime();
+
+    var sqlStr = `INSERT into companyorderdetail(companysubmenuid, ordertime, phoneno) 
+        VALUES(${submenuid}, ${time}, ${phoneno})`;
+
+    console.log(sqlStr);
+    db.run(sqlStr);
+}
+
 exports.get_menu_list       =   get_menu_list;
 
 exports.get_count_from_db   =   get_count_from_db;
@@ -533,3 +603,7 @@ exports.get_menu_name           = get_menu_name;
 exports.update_msg_status       = update_msg_status;
 
 exports.get_messages            = get_messages;
+
+exports.get_company_submenu_list = get_company_submenu_list;
+
+exports.inset_company_order     =   insert_company_order;

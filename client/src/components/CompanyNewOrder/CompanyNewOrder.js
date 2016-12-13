@@ -6,6 +6,8 @@ import Client from '../../Client';
 import { Form, Checkbox, Divider, Button, Modal, Header, Image} from 'semantic-ui-react';
 import barcode from '../../../res/barcode.png';
 
+const  END_TIME = 21;
+
 class CompanyNewOrder extends  Component {
 
 
@@ -24,12 +26,14 @@ class CompanyNewOrder extends  Component {
                 });
         });
 
+        var day = new Date().getHours();
         this.state = {
             value: '',
             menulist: [],
             phoneno: '',
             formData: {},
-            open: false
+            open: false,
+            enabled: (day <= END_TIME)
         }
 
     }
@@ -106,6 +110,14 @@ class CompanyNewOrder extends  Component {
 
         var timestr = today.getMonth() + "月" + today.getDay() + '日';
 
+        var str = '';
+        if(today.getHours() < END_TIME) {
+            str = '谢谢21:00之前下单';
+        }
+        else {
+            str = '已过21:00, 请明天下单';
+        }
+
         return (
 
             <div className="App">
@@ -114,7 +126,7 @@ class CompanyNewOrder extends  Component {
                         <thead>
                         <tr>
                             <th colSpan="3" className="center aligned">
-                                HiGo 营养餐 <font color = 'red'>{timestr} </font> 菜单
+                                HiGo 营养餐 <font color = 'red'>{timestr} </font> 菜单 ({str})
                             </th>
                         </tr>
                         </thead>
@@ -144,7 +156,7 @@ class CompanyNewOrder extends  Component {
                                                 value = {this.state.phoneno}
                                                 onChange = {this.handlephoneChange}
                                     />
-                                    <Button primary fluid type="submit">确 定 选 择</Button>
+                                    <Button primary fluid type="submit" disabled={!this.state.enabled}>确 定 选 择</Button>
                                 </Form>
                             </td>
                         </tr>
@@ -158,6 +170,7 @@ class CompanyNewOrder extends  Component {
                                         <Header>微信支付</Header>
                                         <p>亲,可以选择现在支付.</p>
                                         <p>也可以等到明天取餐再支付 谢谢对厨房支持!</p>
+                                        <p>加霞姐微信 <font color = 'orange' size="5">18600971728 </font> 有 <font color="red" size="5">红包 </font></p>
                                     </Modal.Description>
                                 </Modal.Content>
                                 <Modal.Actions>

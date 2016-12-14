@@ -5,6 +5,7 @@ import NewOrder from './src/components/NewOrder';
 import CookList from './src/components/CookList';
 import OrderList from './src/components/OrderList';
 import CompanyNewOrder from './src/components/CompanyNewOrder';
+import CompanyOrderList from './src/components/CompanyOrders';
 import './src/index.css';
 import './src/semantic-ui/semantic.min.css';
 
@@ -15,6 +16,7 @@ ReactDOM.render(
         <Route path="/cooklist" component={CookList} />
         <Route path="/orderlist" component={OrderList} />
         <Route path="/company/neworder" component={CompanyNewOrder} />
+        <Route path="/company/orderlist" component={CompanyOrderList} />
      </Router>,
     document.getElementById('react-container')
 );

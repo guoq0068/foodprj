@@ -574,6 +574,54 @@ function insert_company_order(companyid, phoneno, submenuid, ip) {
     db.run(sqlStr);
 }
 
+function get_company_order_list(kitchenid, companyid) {
+    var tomorrow = new Date();
+
+    tomorrow.setHours(23, 59, 59);
+    var starttime = tomorrow.getTime();
+
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    var endtime = tomorrow.getTime();
+
+    var sqlStr = `select phoneno, companysubmenuid, ordertime, ip from companyorderdetail as codetail, 
+                companysubmenu as csmenu where codetail.companysubmenuid= csmenu.id and 
+                csmenu.effecttime > ${starttime} and csmenu.effecttime < ${endtime} ;  `;
+
+
+    console.log(sqlStr);
+
+    var result = [];
+    var menulist = get_company_submenu_list(kitchenid, companyid);
+    var r = db.exec(sqlStr);
+
+    var length = 0;
+    if(r[0]) {
+        menulist.map((menu) => {
+
+            result[length] = {'id':menu.id, 'name': menu.values, details:[]};
+
+            var detailLength = 0;
+
+            var details = [];
+
+            r[0].values.map((item) => {
+                if(item[1] == menu.id) {
+                    details[detailLength] = item;
+                    detailLength ++;
+                }
+
+            })
+            result[length].details = details;
+
+            length ++;
+        });
+    }
+
+    return result;
+
+}
+
 exports.get_menu_list       =   get_menu_list;
 
 exports.get_count_from_db   =   get_count_from_db;
@@ -607,3 +655,5 @@ exports.get_messages            = get_messages;
 exports.get_company_submenu_list = get_company_submenu_list;
 
 exports.inset_company_order     =   insert_company_order;
+
+exports.get_company_order_list  =   get_company_order_list;

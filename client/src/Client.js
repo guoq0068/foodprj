@@ -193,6 +193,20 @@ function postCompanyOrder(kitchenid, companyid, phoneno, submenuid) {
 
 }
 
+function getCompanyOrderList(kitchenid, companyid)  {
+
+  var body = `kitchenid=${kitchenid}&companyid=${companyid}`;
+
+  return fetch('/company/getCompanyOrderList', {
+    method: "POST",
+    headers: {
+      "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
+    body: body
+  }).then(parseJSON).catch(() => {return {'status':'error'};});
+
+}
+
 /********************************
  *  company function end
  ********************************/
@@ -200,7 +214,7 @@ function postCompanyOrder(kitchenid, companyid, phoneno, submenuid) {
 const Client = { search, getItems, postSelectFood, getOrderNos, getCookList,
                  postCookOver, getTommorrowCookList, getMessages,
                 getBaiduSound,
-                getCompanyList, getCompanyMenuList, postCompanyOrder};
+                getCompanyList, getCompanyMenuList, postCompanyOrder, getCompanyOrderList};
 
 
 export default Client;

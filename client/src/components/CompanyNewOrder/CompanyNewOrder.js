@@ -5,6 +5,7 @@ import  React, { Component } from 'react';
 import Client from '../../Client';
 import { Form, Checkbox, Divider, Button, Modal, Header, Image} from 'semantic-ui-react';
 import barcode from '../../../res/barcode.png';
+import Utils   from '../../Utils';
 
 const  BEGIN_TIME = 13;
 const  END_TIME = 21;
@@ -16,6 +17,9 @@ class CompanyNewOrder extends  Component {
 
     constructor(props) {
         super(props);
+
+        var phone =  Utils.getCookie('xiajie');
+
 
 
         Client.getCompanyMenuList(1, 1).then((list) => {
@@ -31,7 +35,7 @@ class CompanyNewOrder extends  Component {
         this.state = {
             value: '',
             menulist: [],
-            phoneno: '',
+            phoneno: phone,
             formData: {},
             open: false,
             enabled: (hour <= END_TIME && hour >= BEGIN_TIME)
@@ -79,6 +83,8 @@ class CompanyNewOrder extends  Component {
     handleSubmit = (e, { formData }) => {
         e.preventDefault();
         console.log({formData});
+
+        Utils.setCookie('xiajie', this.state.phoneno, 365);
 
         if(this.checkMobile(this.state.phoneno + '')) {
             console.log(this.state);

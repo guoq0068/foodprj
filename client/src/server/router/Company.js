@@ -34,6 +34,7 @@ function getClientIp(req) {
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
 };
+
 router.post('/postCompanyOrder', (req,res) => {
     var companyid = req.body.companyid;
 
@@ -47,6 +48,20 @@ router.post('/postCompanyOrder', (req,res) => {
 
     myDb.save_db();
 
+    res.send({status:'ok'});
+});
+
+/**
+ * 获取企业团餐的菜单列表
+ */
+router.post('/getCompanyOrderList', (req, res) => {
+
+    var kitchenid = req.body.kitchenid;
+    var companyid = req.body.companyid;
+
+    var result  = myDb.get_company_order_list(kitchenid, companyid);
+
+    res.json(result);
 });
 
 

@@ -112,10 +112,10 @@ class CompanyNewOrder extends  Component {
 
         var str = '';
         if(today.getHours() < END_TIME) {
-            str = '谢谢,请在21:00之前下单';
+            str = '谢谢, 请在21:00之前下单';
         }
         else {
-            str = '抱歉, 已过21:00, 请明天下单';
+            str = '已过21:00, 请明天下单';
         }
 
         return (
@@ -168,8 +168,8 @@ class CompanyNewOrder extends  Component {
                                     <Image wrapped size='medium' src={barcode}/>
                                     <Modal.Description>
                                         <Header>微信支付</Header>
-                                        <p>亲,请现在支付.</p>
-                                        <p>谢谢对厨房支持! </p>
+                                        <p>亲,可以选择现在支付.</p>
+                                        <p>谢谢对厨房支持!</p>
                                         <p>加霞姐微信 <font color = 'orange' size="5">18600971728 </font> 有 <font color="red" size="5">红包 </font></p>
                                     </Modal.Description>
                                 </Modal.Content>

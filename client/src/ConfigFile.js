@@ -8,7 +8,7 @@ class ConfigFile {
 }
 
 export  default  ConfigFile = {
-    IPAddr : '192.168.1.105',  //服务器IP  '101.201.233.184'  dev.vtuanba.cn 192.168.1.112
+    IPAddr : 'dev.vtuanba.cn',  //服务器IP  '101.201.233.184'  dev.vtuanba.cn 192.168.1.112
     Port   : 3000,          //服务器端口号
     KittchenId :  1,        //厨房的id
     TIME_INTERVAL : 2,      //隔多久算一个时间端

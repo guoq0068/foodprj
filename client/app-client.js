@@ -17,6 +17,7 @@ ReactDOM.render(
         <Route path="/orderlist" component={OrderList} />
         <Route path="/company/neworder" component={CompanyNewOrder} />
         <Route path="/company/orderlist" component={CompanyOrderList} />
+        <Route path="/higo" component={CompanyNewOrder} />
      </Router>,
     document.getElementById('react-container')
 );

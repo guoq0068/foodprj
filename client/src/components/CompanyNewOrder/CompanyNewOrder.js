@@ -6,6 +6,7 @@ import Client from '../../Client';
 import { Form, Checkbox, Divider, Button, Modal, Header, Image} from 'semantic-ui-react';
 import barcode from '../../../res/barcode.png';
 
+const  BEGIN_TIME = 13;
 const  END_TIME = 21;
 
 class CompanyNewOrder extends  Component {
@@ -26,14 +27,14 @@ class CompanyNewOrder extends  Component {
                 });
         });
 
-        var day = new Date().getHours();
+        var hour = new Date().getHours() + 1;
         this.state = {
             value: '',
             menulist: [],
             phoneno: '',
             formData: {},
             open: false,
-            enabled: (day <= END_TIME)
+            enabled: (hour <= END_TIME && hour >= BEGIN_TIME)
         }
 
     }
@@ -111,14 +112,17 @@ class CompanyNewOrder extends  Component {
         var timestr = (today.getMonth() + 1) + "月" + today.getDate() + '日';
 
         var str = '';
-        if(today.getHours() < END_TIME) {
-            str = '谢谢, 请在21:00之前下单';
-        }
-        else {
-            str = '已过21:00, 请明天下单';
-        }
 
-        return (
+	var hour = today.getHours() + 1;
+        if(hour <= END_TIME && hour >= BEGIN_TIME) {
+            str = '谢谢, 请在13:00 - 21:00之前下明日单';
+        }
+        else if (hour > END_TIME){
+            str = '已过'+ END_TIME + ':00, 请明天下单';
+        } else {
+            str = '未到' + BEGIN_TIME + ':00, 请等待';
+        }
+	return (
 
             <div className="App">
                 <div className="ui text container">
